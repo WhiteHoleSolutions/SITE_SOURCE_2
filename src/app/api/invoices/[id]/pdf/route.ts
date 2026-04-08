@@ -11,7 +11,7 @@ export async function GET(
     const session = await getSession()
     const { id } = await params
 
-    if (!session || session.role !== 'ADMIN') {
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -36,6 +36,17 @@ export async function GET(
 
     if (!invoice) {
       return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
+    }
+
+    // If customer, verify they own this invoice
+    if (session.role === 'CUSTOMER') {
+      const customer = await prisma.customer.findUnique({
+        where: { userId: session.userId },
+      })
+
+      if (!customer || invoice.customerId !== customer.id) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
     }
 
     // Fetch business info
