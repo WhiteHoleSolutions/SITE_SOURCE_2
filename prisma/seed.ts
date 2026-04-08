@@ -6,30 +6,27 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Starting database seed...')
 
-  // Create admin user
+  // Create or update admin user
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@whiteholesolutions.com'
   const adminPassword = process.env.ADMIN_PASSWORD || 'admin123'
 
-  const existingAdmin = await prisma.user.findUnique({
+  const hashedPassword = await hashPassword(adminPassword)
+
+  const admin = await prisma.user.upsert({
     where: { email: adminEmail },
+    update: {
+      password: hashedPassword,
+      role: 'ADMIN',
+    },
+    create: {
+      email: adminEmail,
+      password: hashedPassword,
+      name: 'Admin',
+      role: 'ADMIN',
+    },
   })
 
-  if (!existingAdmin) {
-    const hashedPassword = await hashPassword(adminPassword)
-    
-    await prisma.user.create({
-      data: {
-        email: adminEmail,
-        password: hashedPassword,
-        name: 'Admin',
-        role: 'ADMIN',
-      },
-    })
-
-    console.log(`✅ Admin user created: ${adminEmail}`)
-  } else {
-    console.log('ℹ️  Admin user already exists')
-  }
+  console.log(`✅ Admin user ready: ${adminEmail}`)
 
   console.log('✨ Seed completed!')
 }

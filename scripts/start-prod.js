@@ -27,19 +27,14 @@ try {
   console.log('⚠️  Continuing anyway...');
 }
 
-// Seed database if needed (first deployment)
-const dbPath = path.join(diskPath, 'production.db');
-const isFirstRun = !fs.existsSync(dbPath);
-
-if (isFirstRun) {
-  console.log('🌱 First run detected - seeding database...');
-  try {
-    execSync('npx tsx prisma/seed.ts', { stdio: 'inherit' });
-    console.log('✅ Database seeded successfully');
-  } catch (err) {
-    console.error('⚠️  Seeding failed:', err.message);
-    console.log('Continuing anyway...');
-  }
+// Seed database (ensure admin user exists with current environment credentials)
+console.log('🌱 Ensuring admin user exists...');
+try {
+  execSync('npx tsx prisma/seed.ts', { stdio: 'inherit' });
+  console.log('✅ Database seeded successfully');
+} catch (err) {
+  console.error('⚠️  Seeding failed:', err.message);
+  console.log('Continuing anyway...');
 }
 
 // Start Next.js server
