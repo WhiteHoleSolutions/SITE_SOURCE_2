@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
+// Force dynamic rendering - don't try to prerender during build
+export const dynamic = 'force-dynamic'
+
 // GET /api/business-info/public - Get public business information (no auth required)
 export async function GET(req: NextRequest) {
   try {
