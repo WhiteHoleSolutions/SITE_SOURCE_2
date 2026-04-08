@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
-import { LogOut, Download } from 'lucide-react'
+import { LogOut, Download, FileDown } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/utils'
 
 interface Customer {
@@ -107,6 +107,29 @@ export default function DashboardPage() {
         toast.success('Redirecting to payment...')
       } else {
         toast.error(data.error || 'Failed to create payment')
+      }
+    } catch (error) {
+      toast.error('An error occurred')
+    }
+  }
+
+  const handleDownloadInvoice = async (invoiceId: string) => {
+    try {
+      const response = await fetch(`/api/invoices/${invoiceId}/pdf`)
+      
+      if (response.ok) {
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `invoice-${invoiceId}.pdf`
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+        toast.success('Invoice downloaded')
+      } else {
+        toast.error('Failed to download invoice')
       }
     } catch (error) {
       toast.error('An error occurred')
@@ -240,7 +263,13 @@ export default function DashboardPage() {
                     Invoice #
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-dark-600 uppercase">
-                    Date
+                    Issued
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-dark-600 uppercase">
+                    Due Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-dark-600 uppercase">
+                    Items
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-dark-600 uppercase">
                     Amount
@@ -249,7 +278,7 @@ export default function DashboardPage() {
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-dark-600 uppercase">
-                    Action
+                    Actions
                   </th>
                 </tr>
               </thead>
@@ -260,29 +289,45 @@ export default function DashboardPage() {
                       {invoice.invoiceNumber}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-600">
-                      {formatDate(invoice.createdAt)}
+                      {formatDate(invoice.issuedAt || invoice.createdAt)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-600">
+                      {invoice.dueDate ? formatDate(invoice.dueDate) : '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-600">
+                      {invoice.items?.length || 0}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-dark-900">
                       {formatCurrency(invoice.total)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                         invoice.status === 'PAID' ? 'bg-green-100 text-green-800' :
                         invoice.status === 'SENT' ? 'bg-blue-100 text-blue-800' :
+                        invoice.status === 'OVERDUE' ? 'bg-red-100 text-red-800' :
                         'bg-yellow-100 text-yellow-800'
                       }`}>
                         {invoice.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      {invoice.status !== 'PAID' && invoice.status !== 'CANCELLED' && (
+                      <div className="flex gap-2">
                         <button
-                          onClick={() => handlePayInvoice(invoice)}
-                          className="text-primary-600 hover:text-primary-700 font-medium"
+                          onClick={() => handleDownloadInvoice(invoice.id)}
+                          className="text-dark-600 hover:text-primary-600 transition"
+                          title="Download PDF"
                         >
-                          Pay Now
+                          <FileDown size={18} />
                         </button>
-                      )}
+                        {invoice.status !== 'PAID' && invoice.status !== 'CANCELLED' && (
+                          <button
+                            onClick={() => handlePayInvoice(invoice)}
+                            className="text-primary-600 hover:text-primary-700 font-medium"
+                          >
+                            Pay Now
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -295,13 +340,24 @@ export default function DashboardPage() {
             {customer.invoices.map((invoice: any) => (
               <div key={invoice.id} className="bg-white rounded-lg shadow p-4 space-y-3">
                 <div className="flex justify-between items-start">
-                  <div>
+                  <div className="flex-1">
                     <div className="text-sm font-medium text-dark-900">{invoice.invoiceNumber}</div>
-                    <div className="text-xs text-dark-700 mt-1">{formatDate(invoice.createdAt)}</div>
+                    <div className="text-xs text-dark-600 mt-1">
+                      Issued: {formatDate(invoice.issuedAt || invoice.createdAt)}
+                    </div>
+                    {invoice.dueDate && (
+                      <div className="text-xs text-dark-600">
+                        Due: {formatDate(invoice.dueDate)}
+                      </div>
+                    )}
+                    <div className="text-xs text-dark-600">
+                      {invoice.items?.length || 0} item{invoice.items?.length !== 1 ? 's' : ''}
+                    </div>
                   </div>
                   <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                     invoice.status === 'PAID' ? 'bg-green-100 text-green-800' :
                     invoice.status === 'SENT' ? 'bg-blue-100 text-blue-800' :
+                    invoice.status === 'OVERDUE' ? 'bg-red-100 text-red-800' :
                     'bg-yellow-100 text-yellow-800'
                   }`}>
                     {invoice.status}
@@ -311,14 +367,23 @@ export default function DashboardPage() {
                   <div className="text-lg font-semibold text-dark-900">
                     {formatCurrency(invoice.total)}
                   </div>
-                  {invoice.status !== 'PAID' && invoice.status !== 'CANCELLED' && (
+                  <div className="flex gap-2">
                     <button
-                      onClick={() => handlePayInvoice(invoice)}
-                      className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition active:scale-95"
+                      onClick={() => handleDownloadInvoice(invoice.id)}
+                      className="bg-dark-200 hover:bg-dark-300 text-dark-900 px-3 py-2 rounded-lg text-sm font-medium transition active:scale-95 flex items-center gap-1"
                     >
-                      Pay Now
+                      <FileDown size={16} />
+                      PDF
                     </button>
-                  )}
+                    {invoice.status !== 'PAID' && invoice.status !== 'CANCELLED' && (
+                      <button
+                        onClick={() => handlePayInvoice(invoice)}
+                        className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition active:scale-95"
+                      >
+                        Pay Now
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
