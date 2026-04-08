@@ -19,18 +19,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 })
     }
 
-    // Get all public albums
-    const publicAlbums = await prisma.album.findMany({
-      where: { type: 'PUBLIC' },
-      include: {
-        media: {
-          orderBy: { order: 'asc' },
-        },
-      },
-      orderBy: { order: 'asc' },
-    })
-
-    // Get private albums the customer has access to
+    // Get ONLY private albums the customer has been granted access to
     const privateAlbumsData = await prisma.album.findMany({
       where: {
         type: 'PRIVATE',
@@ -53,8 +42,8 @@ export async function GET() {
       orderBy: { order: 'asc' },
     })
 
-    // Transform private albums to include permission at top level
-    const privateAlbums = privateAlbumsData.map((album: any) => ({
+    // Transform to include permission at top level
+    const albums = privateAlbumsData.map((album: any) => ({
       id: album.id,
       title: album.title,
       description: album.description,
@@ -66,12 +55,6 @@ export async function GET() {
       media: album.media,
       permission: album.access[0]?.permission || 'VIEW',
     }))
-
-    // Combine and add permission info for private albums
-    const albums = [
-      ...publicAlbums.map(album => ({ ...album, permission: 'VIEW' })),
-      ...privateAlbums,
-    ]
 
     return NextResponse.json({ albums })
   } catch (error: any) {
