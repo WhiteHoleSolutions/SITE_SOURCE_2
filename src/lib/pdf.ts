@@ -1,4 +1,4 @@
-import jsPDF from 'jspdf'
+import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
 interface InvoiceData {
@@ -137,7 +137,7 @@ export function generateInvoicePDF(data: InvoiceData): jsPDF {
   doc.text('Invoice Date:', pageWidth - margin - 60, yPos)
   doc.setFont('helvetica', 'normal')
   doc.text(
-    invoice.issuedAt ? new Date(invoice.issuedAt).toLocaleDateString() : 'N/A',
+    invoice.issuedAt ? new Date(invoice.issuedAt).toLocaleDateString('en-AU') : 'N/A',
     pageWidth - margin,
     yPos,
     { align: 'right' }
@@ -148,7 +148,7 @@ export function generateInvoicePDF(data: InvoiceData): jsPDF {
   doc.text('Due Date:', pageWidth - margin - 60, yPos)
   doc.setFont('helvetica', 'normal')
   doc.text(
-    invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString() : 'N/A',
+    invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString('en-AU') : 'N/A',
     pageWidth - margin,
     yPos,
     { align: 'right' }
@@ -166,7 +166,7 @@ export function generateInvoicePDF(data: InvoiceData): jsPDF {
     doc.text('Paid Date:', pageWidth - margin - 60, yPos)
     doc.setFont('helvetica', 'normal')
     doc.text(
-      new Date(invoice.paidAt).toLocaleDateString(),
+      new Date(invoice.paidAt).toLocaleDateString('en-AU'),
       pageWidth - margin,
       yPos,
       { align: 'right' }
