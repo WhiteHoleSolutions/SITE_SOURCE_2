@@ -45,18 +45,46 @@ export default function Hero() {
     if (heroMedia.length === 0) return
     
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroMedia.length)
+      setCurrentSlide((prev) => {
+        // Pick a random index that's different from the current one
+        if (heroMedia.length === 1) return 0
+        
+        let newIndex
+        do {
+          newIndex = Math.floor(Math.random() * heroMedia.length)
+        } while (newIndex === prev)
+        
+        return newIndex
+      })
     }, 5000)
 
     return () => clearInterval(timer)
   }, [heroMedia.length])
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % heroMedia.length)
+    setCurrentSlide((prev) => {
+      if (heroMedia.length === 1) return 0
+      
+      let newIndex
+      do {
+        newIndex = Math.floor(Math.random() * heroMedia.length)
+      } while (newIndex === prev)
+      
+      return newIndex
+    })
   }
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + heroMedia.length) % heroMedia.length)
+    setCurrentSlide((prev) => {
+      if (heroMedia.length === 1) return 0
+      
+      let newIndex
+      do {
+        newIndex = Math.floor(Math.random() * heroMedia.length)
+      } while (newIndex === prev)
+      
+      return newIndex
+    })
   }
 
   return (

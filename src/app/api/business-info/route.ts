@@ -63,6 +63,7 @@ export async function PUT(req: NextRequest) {
           website: data.website,
           taxRate: data.taxRate ? parseFloat(data.taxRate) : 10.0,
           paymentTerms: data.paymentTerms,
+          diskSizeGB: data.diskSizeGB ? parseFloat(data.diskSizeGB) : 1.0,
         },
       });
     } else {
@@ -82,6 +83,7 @@ export async function PUT(req: NextRequest) {
           website: data.website,
           taxRate: data.taxRate ? parseFloat(data.taxRate) : 10.0,
           paymentTerms: data.paymentTerms || 'Net 30',
+          diskSizeGB: data.diskSizeGB ? parseFloat(data.diskSizeGB) : 1.0,
         },
       });
     }

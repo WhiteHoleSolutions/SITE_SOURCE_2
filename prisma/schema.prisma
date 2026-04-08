@@ -189,6 +189,9 @@ model BusinessInfo {
   taxRate         Float     @default(10.0) // GST rate (10% in Australia)
   paymentTerms    String    @default("Net 30")
   
+  // Storage settings
+  diskSizeGB      Float     @default(1.0) // Persistent disk size in GB (for Render)
+  
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }

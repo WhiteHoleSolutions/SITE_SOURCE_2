@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
-import { Plus, Trash2, Upload, Users as UsersIcon, Play, Eye, Download, X, Edit, Search } from 'lucide-react'
+import { Plus, Trash2, Upload, Users as UsersIcon, Play, Eye, Download, X, Edit, Search, HardDrive } from 'lucide-react'
 
 export default function AlbumsTab() {
   const [albums, setAlbums] = useState<any[]>([])
@@ -19,10 +19,12 @@ export default function AlbumsTab() {
     type: 'PUBLIC' as 'PUBLIC' | 'PRIVATE',
   })
   const [uploading, setUploading] = useState(false)
+  const [storageInfo, setStorageInfo] = useState<any>(null)
 
   useEffect(() => {
     fetchAlbums()
     fetchCustomers()
+    fetchStorageInfo()
   }, [])
 
   useEffect(() => {
@@ -57,6 +59,16 @@ export default function AlbumsTab() {
       setCustomers(data.customers || [])
     } catch (error) {
       console.error('Failed to fetch customers')
+    }
+  }
+
+  const fetchStorageInfo = async () => {
+    try {
+      const response = await fetch('/api/storage')
+      const data = await response.json()
+      setStorageInfo(data)
+    } catch (error) {
+      console.error('Failed to fetch storage info')
     }
   }
 
@@ -136,6 +148,7 @@ export default function AlbumsTab() {
 
       toast.success('Media uploaded successfully')
       fetchAlbums()
+      fetchStorageInfo()
     } catch (error) {
       toast.error('Failed to upload media')
     } finally {
@@ -173,6 +186,7 @@ export default function AlbumsTab() {
       if (response.ok) {
         toast.success('Media deleted successfully')
         fetchAlbums()
+        fetchStorageInfo()
       } else {
         toast.error('Failed to delete media')
       }
@@ -194,6 +208,41 @@ export default function AlbumsTab() {
           <span className="sm:hidden">New</span>
         </button>
       </div>
+
+      {/* Storage Indicator */}
+      {storageInfo && (
+        <div className="mb-4 sm:mb-6 bg-white border border-gray-200 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <HardDrive size={20} className="text-primary-600" />
+              <span className="text-sm font-medium text-dark-900">Storage Usage</span>
+            </div>
+            <span className="text-sm text-dark-600">
+              {storageInfo.used.mb} MB / {storageInfo.total.gb} GB ({storageInfo.percentage}%)
+            </span>
+          </div>
+          
+          <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+            <div 
+              className={`h-2.5 rounded-full transition-all ${
+                parseFloat(storageInfo.percentage) > 90 
+                  ? 'bg-red-500' 
+                  : parseFloat(storageInfo.percentage) > 75 
+                  ? 'bg-yellow-500' 
+                  : 'bg-primary-500'
+              }`}
+              style={{ width: `${Math.min(parseFloat(storageInfo.percentage), 100)}%` }}
+            />
+          </div>
+          
+          {storageInfo.breakdown && (
+            <div className="flex gap-4 mt-2 text-xs text-dark-600">
+              <span>Uploads: {storageInfo.breakdown.uploads.mb} MB</span>
+              <span>Database: {storageInfo.breakdown.database.mb} MB</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Search Bar */}
       <div className="mb-4 sm:mb-6">
@@ -350,6 +399,7 @@ export default function AlbumsTab() {
             setSelectedAlbum(null)
           }}
           onUpdate={fetchAlbums}
+          onStorageUpdate={fetchStorageInfo}
           uploading={uploading}
           setUploading={setUploading}
         />
@@ -358,7 +408,7 @@ export default function AlbumsTab() {
   )
 }
 
-function AlbumEditModal({ album, customers, onClose, onUpdate, uploading, setUploading }: any) {
+function AlbumEditModal({ album, customers, onClose, onUpdate, onStorageUpdate, uploading, setUploading }: any) {
   const [activeTab, setActiveTab] = useState<'details' | 'media' | 'permissions'>('details')
   const [editData, setEditData] = useState({
     title: album.title,
@@ -442,6 +492,7 @@ function AlbumEditModal({ album, customers, onClose, onUpdate, uploading, setUpl
 
       toast.success('Media uploaded successfully')
       onUpdate()
+      onStorageUpdate()
     } catch (error) {
       toast.error('Failed to upload media')
     } finally {
@@ -461,6 +512,7 @@ function AlbumEditModal({ album, customers, onClose, onUpdate, uploading, setUpl
         toast.success('Media deleted')
         setMedia((prev: any) => prev.filter((m: any) => m.id !== mediaId))
         onUpdate()
+        onStorageUpdate()
       } else {
         toast.error('Failed to delete media')
       }

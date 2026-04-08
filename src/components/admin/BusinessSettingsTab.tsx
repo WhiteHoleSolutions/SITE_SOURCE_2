@@ -19,6 +19,7 @@ export default function BusinessSettingsTab() {
     website: '',
     taxRate: '10.0',
     paymentTerms: 'Net 30',
+    diskSizeGB: '1.0',
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -46,6 +47,7 @@ export default function BusinessSettingsTab() {
           website: data.businessInfo.website || '',
           taxRate: data.businessInfo.taxRate?.toString() || '10.0',
           paymentTerms: data.businessInfo.paymentTerms || 'Net 30',
+          diskSizeGB: data.businessInfo.diskSizeGB?.toString() || '1.0',
         })
       }
     } catch (error) {
@@ -298,6 +300,28 @@ export default function BusinessSettingsTab() {
                 placeholder="Net 30"
               />
               <p className="text-xs text-dark-500 mt-1">e.g., "Net 30", "Due on receipt", etc.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Storage Settings */}
+        <div>
+          <h3 className="text-lg font-semibold text-dark-900 mb-4">Storage Settings</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-dark-900 mb-2">
+                Disk Size (GB)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                min="0.1"
+                value={businessInfo.diskSizeGB}
+                onChange={(e) => setBusinessInfo({ ...businessInfo, diskSizeGB: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-dark-900 placeholder-gray-400"
+                placeholder="1.0"
+              />
+              <p className="text-xs text-dark-500 mt-1">Total persistent disk size for storage indicator (Render default: 1 GB)</p>
             </div>
           </div>
         </div>
