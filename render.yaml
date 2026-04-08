@@ -1,0 +1,30 @@
+services:
+  # Web Application with Persistent Disk for SQLite
+  - type: web
+    name: white-hole-solutions
+    env: node
+    plan: starter
+    buildCommand: npm ci && mkdir -p /app/disk && npx prisma migrate deploy && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    disk:
+      name: sqlite-data
+      mountPath: /app/disk
+      sizeGB: 1
+    envVars:
+      - key: DATABASE_URL
+        value: file:/app/disk/production.db
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: REVOLUT_API_KEY
+        sync: false
+      - key: REVOLUT_API_URL
+        value: https://sandbox-b2b.revolut.com/api/1.0
+      - key: ADMIN_EMAIL
+        value: admin@whiteholesolutions.com
+      - key: ADMIN_PASSWORD
+        generateValue: true

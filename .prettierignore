@@ -1,0 +1,24 @@
+# Ignore build outputs
+.next
+out
+dist
+build
+
+# Ignore node modules
+node_modules
+
+# Ignore database files
+*.db
+*.db-journal
+
+# Ignore env files
+.env
+.env*.local
+
+# Ignore lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignore logs
+*.log

@@ -1,0 +1,82 @@
+{
+  "name": "white-hole-solutions",
+  "version": "1.0.0",
+  "description": "Business Media Solutions Portfolio & Client Management System",
+  "private": true,
+  "author": "White Hole Solutions",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/white-hole-solutions.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/white-hole-solutions/issues"
+  },
+  "homepage": "https://github.com/yourusername/white-hole-solutions#readme",
+  "keywords": [
+    "nextjs",
+    "portfolio",
+    "client-management",
+    "invoice",
+    "media-gallery",
+    "business",
+    "photography",
+    "videography",
+    "cms",
+    "sqlite",
+    "prisma",
+    "typescript"
+  ],
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.3.4",
+    "@prisma/client": "^5.9.1",
+    "axios": "^1.6.7",
+    "bcryptjs": "^2.4.3",
+    "clsx": "^2.1.0",
+    "date-fns": "^3.3.1",
+    "framer-motion": "^11.0.5",
+    "jose": "^6.2.2",
+    "jsonwebtoken": "^9.0.2",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
+    "lucide-react": "^0.323.0",
+    "next": "^14.1.0",
+    "prisma": "^5.9.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
+    "react-hook-form": "^7.50.1",
+    "react-hot-toast": "^2.4.1",
+    "sharp": "^0.33.2",
+    "swiper": "^11.0.6",
+    "tailwind-merge": "^2.2.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.11.16",
+    "@types/react": "^18.2.52",
+    "@types/react-dom": "^18.2.18",
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "^14.1.0",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}
