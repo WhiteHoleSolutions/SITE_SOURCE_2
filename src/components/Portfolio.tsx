@@ -27,7 +27,7 @@ export default function Portfolio() {
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null)
 
   useEffect(() => {
-    fetch('/api/albums')
+    fetch('/api/albums/public')
       .then(res => res.json())
       .then(data => setAlbums(data.albums || []))
       .catch(console.error)

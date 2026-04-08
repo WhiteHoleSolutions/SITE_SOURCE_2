@@ -27,7 +27,7 @@ export default function Hero() {
       .catch(console.error)
 
     // Fetch public albums for hero display
-    fetch('/api/albums')
+    fetch('/api/albums/public')
       .then(res => res.json())
       .then(data => {
         const media: HeroMedia[] = []
