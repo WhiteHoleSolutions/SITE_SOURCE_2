@@ -20,8 +20,12 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    // Create uploads directory if it doesn't exist
-    const uploadDir = join(process.cwd(), 'public', 'uploads')
+    // Use persistent disk in production, public directory in development
+    const isProduction = process.env.NODE_ENV === 'production'
+    const uploadDir = isProduction 
+      ? '/app/disk/uploads'
+      : join(process.cwd(), 'public', 'uploads')
+    
     await mkdir(uploadDir, { recursive: true })
 
     // Generate unique filename
@@ -32,7 +36,8 @@ export async function POST(request: NextRequest) {
     // Write file
     await writeFile(filepath, buffer)
 
-    const url = `/uploads/${filename}`
+    // In production, files are served via API route; in dev, via public folder
+    const url = isProduction ? `/api/files/${filename}` : `/uploads/${filename}`
 
     return NextResponse.json({ 
       url,

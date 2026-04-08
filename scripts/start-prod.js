@@ -17,6 +17,17 @@ if (!fs.existsSync(diskPath)) {
   }
 }
 
+// Create uploads directory inside disk
+const uploadsPath = path.join(diskPath, 'uploads');
+if (!fs.existsSync(uploadsPath)) {
+  console.log(`📁 Creating uploads directory: ${uploadsPath}`);
+  try {
+    fs.mkdirSync(uploadsPath, { recursive: true });
+  } catch (err) {
+    console.warn(`⚠️  Could not create ${uploadsPath}:`, err.message);
+  }
+}
+
 // Run database migrations
 console.log('🔄 Running database migrations...');
 try {
