@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
-import { LogOut, Download, FileDown } from 'lucide-react'
+import { LogOut, Download, FileDown, Briefcase, CalendarDays } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/utils'
 
 interface Customer {
@@ -20,10 +20,40 @@ interface Customer {
   albumAccess: any[]
 }
 
+interface ClientJob {
+  id: string
+  jobNumber: string
+  title: string
+  status: string
+  clientGoal?: string | null
+  startDate?: string | null
+  dueDate?: string | null
+  services: { id: string; serviceType: string; status: string }[]
+}
+
+const CLIENT_STAGES = ['Plan', 'Scheduled', 'Creating', 'Review', 'Delivered']
+
+function jobStageIndex(status: string) {
+  if (['LEAD', 'SCOPED', 'QUOTE_SENT'].includes(status)) return 0
+  if (['CONFIRMED', 'SCHEDULED'].includes(status)) return 1
+  if (status === 'IN_PRODUCTION') return 2
+  if (['CLIENT_REVIEW', 'READY_TO_DELIVER'].includes(status)) return 3
+  return 4
+}
+
+function jobStageLabel(status: string) {
+  return CLIENT_STAGES[jobStageIndex(status)]
+}
+
+function readableService(value: string) {
+  return value.replaceAll('_', ' ').replace(/\b\w/g, char => char.toUpperCase())
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const [customer, setCustomer] = useState<Customer | null>(null)
   const [albums, setAlbums] = useState<any[]>([])
+  const [jobs, setJobs] = useState<ClientJob[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedAlbum, setSelectedAlbum] = useState<any>(null)
   const [businessName, setBusinessName] = useState('White Hole Solutions')
@@ -31,6 +61,7 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchCustomerData()
     fetchAlbums()
+    fetchJobs()
     
     // Fetch business name
     fetch('/api/business-info/public')
@@ -79,6 +110,16 @@ export default function DashboardPage() {
       }
     } catch (error) {
       console.error('Error fetching albums:', error)
+    }
+  }
+
+  const fetchJobs = async () => {
+    try {
+      const response = await fetch('/api/customers/jobs')
+      const data = await response.json()
+      if (response.ok) setJobs(data.jobs || [])
+    } catch (error) {
+      console.error('Error fetching jobs:', error)
     }
   }
 
@@ -187,6 +228,45 @@ export default function DashboardPage() {
             </p>
           </div>
         </div>
+
+        {/* Jobs */}
+        {jobs.length > 0 && (
+          <section className="mb-6 sm:mb-8">
+            <div className="flex items-end justify-between gap-4 mb-3 sm:mb-4">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-dark-900">Your projects</h2>
+                <p className="mt-1 text-sm text-dark-600">Follow your work from planning through to delivery.</p>
+              </div>
+              <Briefcase className="text-primary-500" size={24} aria-hidden="true" />
+            </div>
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              {jobs.map(job => {
+                const stage = jobStageIndex(job.status)
+                return (
+                  <article key={job.id} className="rounded-xl bg-white p-5 shadow">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-bold tracking-wide text-primary-600">{job.jobNumber}</p>
+                        <h3 className="mt-1 text-lg font-semibold text-dark-900">{job.title}</h3>
+                      </div>
+                      <span className="rounded-full bg-primary-50 px-3 py-1 text-xs font-bold text-primary-700">{jobStageLabel(job.status)}</span>
+                    </div>
+                    {job.clientGoal && <p className="mt-3 text-sm leading-6 text-dark-600">{job.clientGoal}</p>}
+                    <div className="mt-5">
+                      <div className="mb-2 flex justify-between text-xs font-medium text-dark-500"><span>Project progress</span><span>{CLIENT_STAGES[stage]}</span></div>
+                      <div className="h-2 overflow-hidden rounded-full bg-dark-200"><div className="h-full rounded-full bg-primary-500 transition-all" style={{ width: `${((stage + 1) / CLIENT_STAGES.length) * 100}%` }} /></div>
+                      <div className="mt-2 flex justify-between text-[10px] font-medium text-dark-400">{CLIENT_STAGES.map(item => <span key={item} className={CLIENT_STAGES.indexOf(item) <= stage ? 'text-primary-600' : ''}>{item}</span>)}</div>
+                    </div>
+                    <div className="mt-5 flex flex-col gap-2 border-t border-dark-100 pt-4 text-sm text-dark-600 sm:flex-row sm:items-center sm:justify-between">
+                      <span>{job.services.length ? job.services.map(service => readableService(service.serviceType)).join(' · ') : 'Project details being prepared'}</span>
+                      {job.dueDate && <span className="inline-flex shrink-0 items-center gap-1 text-xs"><CalendarDays size={14} /> Target: {formatDate(job.dueDate)}</span>}
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Albums */}
         {albums.length > 0 && (
