@@ -49,7 +49,12 @@ export default function Hero() {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => {
         if (heroMedia.length === 1) return 0
-        return (prev + 1) % heroMedia.length
+
+        let nextIndex
+        do {
+          nextIndex = Math.floor(Math.random() * heroMedia.length)
+        } while (nextIndex === prev)
+        return nextIndex
       })
     }, 5000)
 
@@ -60,7 +65,11 @@ export default function Hero() {
     setCurrentSlide((prev) => {
       if (heroMedia.length === 1) return 0
       
-      return (prev + 1) % heroMedia.length
+      let nextIndex
+      do {
+        nextIndex = Math.floor(Math.random() * heroMedia.length)
+      } while (nextIndex === prev)
+      return nextIndex
     })
   }
 
@@ -72,7 +81,11 @@ export default function Hero() {
     setCurrentSlide((prev) => {
       if (heroMedia.length === 1) return 0
       
-      return (prev - 1 + heroMedia.length) % heroMedia.length
+      let nextIndex
+      do {
+        nextIndex = Math.floor(Math.random() * heroMedia.length)
+      } while (nextIndex === prev)
+      return nextIndex
     })
   }
 
