@@ -298,7 +298,7 @@ export default function AlbumsTab() {
               <div className="flex items-start justify-between mb-2">
                 <h3 className="font-semibold text-sm sm:text-base text-dark-900 flex-1 pr-2">{album.title}</h3>
                 <span className={`text-xs px-2 py-1 rounded-full whitespace-nowrap ${
-                  album.type === 'PUBLIC' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                  album.type === 'PUBLIC' ? 'bg-blue-100 text-blue-800' : 'bg-blue-100 text-blue-800'
                 }`}>
                   {album.type}
                 </span>

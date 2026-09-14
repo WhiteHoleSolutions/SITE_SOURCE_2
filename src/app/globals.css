@@ -86,7 +86,7 @@ body {
 
 .portal-shell {
   min-height: 100vh;
-  background: radial-gradient(circle at 90% -10%, rgba(198, 255, 67, .22), transparent 28rem), #f4f1eb;
+  background: radial-gradient(circle at 90% -10%, rgba(101, 167, 255, .22), transparent 28rem), #f4f1eb;
 }
 
 .portal-card {

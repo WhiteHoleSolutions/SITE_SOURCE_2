@@ -131,7 +131,7 @@ export default function AnalyticsTab() {
         <div className="bg-white rounded-lg border p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm text-dark-600">Total Revenue</div>
-            <DollarSign className="text-green-500" size={20} />
+            <DollarSign className="text-blue-500" size={20} />
           </div>
           <div className="text-2xl font-bold text-dark-900">{formatCurrency(summary.totalRevenue)}</div>
           <div className="text-xs text-dark-500 mt-1">From paid invoices & equipment sold</div>
@@ -150,13 +150,13 @@ export default function AnalyticsTab() {
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm text-dark-600">Profit/Loss</div>
             {summary.profitLoss >= 0 ? (
-              <TrendingUp className="text-green-500" size={20} />
+              <TrendingUp className="text-blue-500" size={20} />
             ) : (
               <TrendingDown className="text-red-500" size={20} />
             )}
           </div>
           <div
-            className={`text-2xl font-bold ${summary.profitLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}
+            className={`text-2xl font-bold ${summary.profitLoss >= 0 ? 'text-blue-600' : 'text-red-600'}`}
           >
             {formatCurrency(summary.profitLoss)}
           </div>
@@ -168,10 +168,10 @@ export default function AnalyticsTab() {
         <div className="bg-white rounded-lg border p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm text-dark-600">GST Position</div>
-            <Receipt className={tax.gstPosition >= 0 ? 'text-orange-500' : 'text-green-500'} size={20} />
+            <Receipt className={tax.gstPosition >= 0 ? 'text-orange-500' : 'text-blue-500'} size={20} />
           </div>
           <div
-            className={`text-2xl font-bold ${tax.gstPosition >= 0 ? 'text-orange-600' : 'text-green-600'}`}
+            className={`text-2xl font-bold ${tax.gstPosition >= 0 ? 'text-orange-600' : 'text-blue-600'}`}
           >
             {formatCurrency(Math.abs(tax.gstPosition))}
           </div>
@@ -187,7 +187,7 @@ export default function AnalyticsTab() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <div className="text-sm text-dark-600 mb-1">GST Collected</div>
-            <div className="text-xl font-bold text-green-600">{formatCurrency(tax.gstCollected)}</div>
+            <div className="text-xl font-bold text-blue-600">{formatCurrency(tax.gstCollected)}</div>
             <div className="text-xs text-dark-500 mt-1">From invoices & equipment sales</div>
           </div>
           <div>
@@ -197,7 +197,7 @@ export default function AnalyticsTab() {
           </div>
           <div className="border-l pl-6">
             <div className="text-sm text-dark-600 mb-1">Net GST Position</div>
-            <div className={`text-xl font-bold ${tax.gstPosition >= 0 ? 'text-orange-600' : 'text-green-600'}`}>
+            <div className={`text-xl font-bold ${tax.gstPosition >= 0 ? 'text-orange-600' : 'text-blue-600'}`}>
               {formatCurrency(Math.abs(tax.gstPosition))}
             </div>
             <div className="text-xs text-dark-500 mt-1">
@@ -222,7 +222,7 @@ export default function AnalyticsTab() {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-dark-600">Paid</span>
-              <span className="font-semibold text-green-600">{formatCurrency(invoices.paidRevenue)}</span>
+              <span className="font-semibold text-blue-600">{formatCurrency(invoices.paidRevenue)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-dark-600">Unpaid</span>
@@ -284,13 +284,13 @@ export default function AnalyticsTab() {
           </div>
           <div>
             <div className="text-sm text-dark-600 mb-1">Equipment Sold</div>
-            <div className="text-xl font-bold text-green-600">{formatCurrency(billsOfSale.equipmentSold)}</div>
+            <div className="text-xl font-bold text-blue-600">{formatCurrency(billsOfSale.equipmentSold)}</div>
             <div className="text-xs text-dark-500 mt-1">{billsOfSale.sold} transactions</div>
           </div>
           <div>
             <div className="text-sm text-dark-600 mb-1">Net Position</div>
             <div
-              className={`text-xl font-bold ${billsOfSale.netEquipment >= 0 ? 'text-green-600' : 'text-red-600'}`}
+              className={`text-xl font-bold ${billsOfSale.netEquipment >= 0 ? 'text-blue-600' : 'text-red-600'}`}
             >
               {formatCurrency(Math.abs(billsOfSale.netEquipment))}
             </div>
@@ -323,10 +323,10 @@ export default function AnalyticsTab() {
               {monthly.map((month: any, idx: number) => (
                 <tr key={idx} className="border-b last:border-0">
                   <td className="py-2 text-sm text-dark-700">{month.month}</td>
-                  <td className="py-2 text-sm text-right text-green-600">{formatCurrency(month.revenue)}</td>
+                  <td className="py-2 text-sm text-right text-blue-600">{formatCurrency(month.revenue)}</td>
                   <td className="py-2 text-sm text-right text-red-600">{formatCurrency(month.expenses)}</td>
                   <td
-                    className={`py-2 text-sm text-right font-semibold ${month.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                    className={`py-2 text-sm text-right font-semibold ${month.profit >= 0 ? 'text-blue-600' : 'text-red-600'}`}
                   >
                     {formatCurrency(Math.abs(month.profit))}
                   </td>

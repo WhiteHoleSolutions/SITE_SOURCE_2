@@ -185,7 +185,7 @@ export default function ExpensesTab() {
         </div>
         <div className="bg-white rounded-lg border p-4">
           <div className="text-sm text-dark-600 mb-1">Total GST Claimed</div>
-          <div className="text-2xl font-bold text-green-600">{formatCurrency(totalGst)}</div>
+          <div className="text-2xl font-bold text-blue-600">{formatCurrency(totalGst)}</div>
         </div>
         <div className="bg-white rounded-lg border p-4">
           <div className="text-sm text-dark-600 mb-1">Number of Expenses</div>
@@ -252,7 +252,7 @@ export default function ExpensesTab() {
                     {formatCurrency(expense.amount)}
                   </div>
                   {expense.gstAmount && (
-                    <div className="text-xs text-green-600">
+                    <div className="text-xs text-blue-600">
                       GST: {formatCurrency(expense.gstAmount)}
                     </div>
                   )}
@@ -323,7 +323,7 @@ export default function ExpensesTab() {
                   {formatCurrency(expense.amount)}
                 </div>
                 {expense.gstAmount && (
-                  <div className="text-xs text-green-600">
+                  <div className="text-xs text-blue-600">
                     GST: {formatCurrency(expense.gstAmount)}
                   </div>
                 )}
@@ -399,7 +399,7 @@ export default function ExpensesTab() {
                     <span className="text-sm">GST Included (10%)</span>
                   </label>
                   {newExpense.includeGst && newExpense.amount && (
-                    <p className="text-xs text-green-600 mt-1">
+                    <p className="text-xs text-blue-600 mt-1">
                       GST to claim: {formatCurrency(parseFloat(newExpense.amount) * (10 / 110))}
                     </p>
                   )}

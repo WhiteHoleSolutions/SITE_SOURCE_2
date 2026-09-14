@@ -318,7 +318,7 @@ export default function DashboardPage() {
                     <div className="flex items-start justify-between">
                       <h3 className="font-semibold text-dark-900 flex-1">{album.title}</h3>
                       {album.permission === 'DOWNLOAD' && (
-                        <span className="ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
+                        <span className="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
                           <Download size={12} className="inline" /> Download
                         </span>
                       )}
@@ -390,7 +390,7 @@ export default function DashboardPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        invoice.status === 'PAID' ? 'bg-green-100 text-green-800' :
+                        invoice.status === 'PAID' ? 'bg-blue-100 text-blue-800' :
                         invoice.status === 'SENT' ? 'bg-blue-100 text-blue-800' :
                         invoice.status === 'OVERDUE' ? 'bg-red-100 text-red-800' :
                         'bg-yellow-100 text-yellow-800'
@@ -443,7 +443,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                    invoice.status === 'PAID' ? 'bg-green-100 text-green-800' :
+                    invoice.status === 'PAID' ? 'bg-blue-100 text-blue-800' :
                     invoice.status === 'SENT' ? 'bg-blue-100 text-blue-800' :
                     invoice.status === 'OVERDUE' ? 'bg-red-100 text-red-800' :
                     'bg-yellow-100 text-yellow-800'

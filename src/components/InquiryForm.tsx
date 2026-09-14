@@ -69,7 +69,7 @@ export default function InquiryForm() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="max-w-2xl mx-auto rounded-2xl bg-[#f8f6f1] p-5 shadow-[0_20px_50px_rgba(34,54,7,.18)] sm:p-8"
+          className="max-w-2xl mx-auto rounded-2xl bg-[#f8f6f1] p-5 shadow-[0_20px_50px_rgba(30,90,180,.18)] sm:p-8"
         >
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>

@@ -99,7 +99,7 @@ export function generateInvoicePDF(data: InvoiceData): jsPDF {
   // Status Badge
   yPos += 2
   const statusColors: Record<string, [number, number, number]> = {
-    PAID: [34, 197, 94], // green
+    PAID: [37, 99, 235], // blue
     SENT: [59, 130, 246], // blue
     OVERDUE: [239, 68, 68], // red
     DRAFT: [156, 163, 175], // gray

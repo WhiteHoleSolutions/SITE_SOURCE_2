@@ -230,7 +230,7 @@ export default function InvoicesTab() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PAID':
-        return 'bg-green-100 text-green-800';
+        return 'bg-blue-100 text-blue-800';
       case 'SENT':
         return 'bg-blue-100 text-blue-800';
       case 'OVERDUE':

@@ -43,17 +43,17 @@ export default function Navbar() {
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/#services" className={`text-sm font-medium hover:text-[#7fbb16] transition ${
+            <Link href="/#services" className={`text-sm font-medium hover:text-[#216ac4] transition ${
               scrolled ? 'text-dark-900' : 'text-white'
             }`}>
               Services
             </Link>
-            <Link href="/#portfolio" className={`text-sm font-medium hover:text-[#7fbb16] transition ${
+            <Link href="/#portfolio" className={`text-sm font-medium hover:text-[#216ac4] transition ${
               scrolled ? 'text-dark-900' : 'text-white'
             }`}>
               Portfolio
             </Link>
-            <Link href="/#process" className={`text-sm font-medium hover:text-[#7fbb16] transition ${
+            <Link href="/#process" className={`text-sm font-medium hover:text-[#216ac4] transition ${
               scrolled ? 'text-dark-900' : 'text-white'
             }`}>
               Process

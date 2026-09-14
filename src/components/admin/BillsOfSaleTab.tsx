@@ -157,7 +157,7 @@ export default function BillsOfSaleTab() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                    bill.type === 'BOUGHT' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                    bill.type === 'BOUGHT' ? 'bg-blue-100 text-blue-800' : 'bg-blue-100 text-blue-800'
                   }`}>
                     {bill.type}
                   </span>
@@ -210,7 +210,7 @@ export default function BillsOfSaleTab() {
               </div>
               <div className="flex items-center gap-2">
                 <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                  bill.type === 'BOUGHT' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                  bill.type === 'BOUGHT' ? 'bg-blue-100 text-blue-800' : 'bg-blue-100 text-blue-800'
                 }`}>
                   {bill.type}
                 </span>
