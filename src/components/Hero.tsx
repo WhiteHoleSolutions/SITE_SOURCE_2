@@ -27,7 +27,8 @@ export default function Hero() {
       })
       .catch(console.error)
 
-    // Fetch public albums for hero display
+    // The public endpoint returns PUBLIC albums only. Include every item in
+    // those albums so the hero becomes a complete public-work reel.
     fetch('/api/albums/public')
       .then(res => res.json())
       .then(data => {
@@ -47,15 +48,8 @@ export default function Hero() {
     
     const timer = setInterval(() => {
       setCurrentSlide((prev) => {
-        // Pick a random index that's different from the current one
         if (heroMedia.length === 1) return 0
-        
-        let newIndex
-        do {
-          newIndex = Math.floor(Math.random() * heroMedia.length)
-        } while (newIndex === prev)
-        
-        return newIndex
+        return (prev + 1) % heroMedia.length
       })
     }, 5000)
 
@@ -66,12 +60,7 @@ export default function Hero() {
     setCurrentSlide((prev) => {
       if (heroMedia.length === 1) return 0
       
-      let newIndex
-      do {
-        newIndex = Math.floor(Math.random() * heroMedia.length)
-      } while (newIndex === prev)
-      
-      return newIndex
+      return (prev + 1) % heroMedia.length
     })
   }
 
@@ -83,12 +72,7 @@ export default function Hero() {
     setCurrentSlide((prev) => {
       if (heroMedia.length === 1) return 0
       
-      let newIndex
-      do {
-        newIndex = Math.floor(Math.random() * heroMedia.length)
-      } while (newIndex === prev)
-      
-      return newIndex
+      return (prev - 1 + heroMedia.length) % heroMedia.length
     })
   }
 
