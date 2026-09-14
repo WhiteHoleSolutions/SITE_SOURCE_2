@@ -13,6 +13,7 @@ interface HeroMedia {
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [heroMedia, setHeroMedia] = useState<HeroMedia[]>([])
+  const [loadedMedia, setLoadedMedia] = useState<Set<string>>(new Set())
   const [businessName, setBusinessName] = useState('White Hole Solutions')
 
   useEffect(() => {
@@ -74,6 +75,10 @@ export default function Hero() {
     })
   }
 
+  const markMediaLoaded = (url: string) => {
+    setLoadedMedia(current => current.has(url) ? current : new Set(current).add(url))
+  }
+
   const prevSlide = () => {
     setCurrentSlide((prev) => {
       if (heroMedia.length === 1) return 0
@@ -96,7 +101,7 @@ export default function Hero() {
             <div
               key={`${media.url}-${index}`}
               className={`absolute inset-0 transition-opacity duration-1000 ${
-                index === currentSlide ? 'opacity-100' : 'opacity-0'
+                index === currentSlide && loadedMedia.has(media.url) ? 'opacity-100' : 'opacity-0'
               }`}
             >
               {media.type === 'IMAGE' ? (
@@ -106,6 +111,7 @@ export default function Hero() {
                   fill
                   className="object-cover protected-image"
                   priority={index === 0}
+                  onLoadingComplete={() => markMediaLoaded(media.url)}
                 />
               ) : (
                 <video
@@ -117,6 +123,7 @@ export default function Hero() {
                   playsInline
                   preload="auto"
                   className="w-full h-full object-cover"
+                  onCanPlay={() => markMediaLoaded(media.url)}
                 />
               )}
             </div>

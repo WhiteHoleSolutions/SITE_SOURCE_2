@@ -25,6 +25,7 @@ export default function Portfolio() {
   const [albums, setAlbums] = useState<Album[]>([])
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null)
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null)
+  const [loadedAssets, setLoadedAssets] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     fetch('/api/albums/public')
@@ -32,6 +33,10 @@ export default function Portfolio() {
       .then(data => setAlbums(data.albums || []))
       .catch(console.error)
   }, [])
+
+  const markLoaded = (key: string) => {
+    setLoadedAssets(current => current.has(key) ? current : new Set(current).add(key))
+  }
 
   return (
     <section id="portfolio" className="bg-[#111211] py-24 sm:py-32">
@@ -68,7 +73,8 @@ export default function Portfolio() {
                     src={album.coverImage}
                     alt={album.title}
                     fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500 protected-image"
+                    className={`object-cover group-hover:scale-110 transition-all duration-700 protected-image ${loadedAssets.has(`cover-${album.id}`) ? 'opacity-100' : 'opacity-0'}`}
+                    onLoadingComplete={() => markLoaded(`cover-${album.id}`)}
                   />
                 ) : album.media[0] ? (
                   album.media[0].type === 'IMAGE' ? (
@@ -76,16 +82,18 @@ export default function Portfolio() {
                       src={album.media[0].url}
                       alt={album.title}
                       fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500 protected-image"
+                      className={`object-cover group-hover:scale-110 transition-all duration-700 protected-image ${loadedAssets.has(album.media[0].id) ? 'opacity-100' : 'opacity-0'}`}
+                      onLoadingComplete={() => markLoaded(album.media[0].id)}
                     />
                   ) : (
-                    <div className="relative w-full h-full">
+                    <div className={`relative h-full w-full transition-opacity duration-700 ${loadedAssets.has(album.media[0].id) ? 'opacity-100' : 'opacity-0'}`}>
                       <video
                         src={album.media[0].url}
                         className="w-full h-full object-cover"
                         muted
                         playsInline
                         preload="metadata"
+                        onLoadedData={() => markLoaded(album.media[0].id)}
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/20">
                         <Play className="text-white" size={48} />

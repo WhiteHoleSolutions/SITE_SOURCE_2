@@ -56,6 +56,7 @@ export default function DashboardPage() {
   const [jobs, setJobs] = useState<ClientJob[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedAlbum, setSelectedAlbum] = useState<any>(null)
+  const [loadedAlbums, setLoadedAlbums] = useState<Set<string>>(new Set())
   const [businessName, setBusinessName] = useState('White Hole Solutions')
 
   useEffect(() => {
@@ -121,6 +122,10 @@ export default function DashboardPage() {
     } catch (error) {
       console.error('Error fetching jobs:', error)
     }
+  }
+
+  const markAlbumLoaded = (id: string) => {
+    setLoadedAlbums(current => current.has(id) ? current : new Set(current).add(id))
   }
 
   const handleLogout = async () => {
@@ -287,16 +292,18 @@ export default function DashboardPage() {
                           src={album.media[0].url}
                           alt={album.title}
                           fill
-                          className="object-cover"
+                          className={`object-cover transition-opacity duration-700 ${loadedAlbums.has(album.id) ? 'opacity-100' : 'opacity-0'}`}
+                          onLoadingComplete={() => markAlbumLoaded(album.id)}
                         />
                       ) : (
-                        <div className="relative w-full h-full">
+                        <div className={`relative h-full w-full transition-opacity duration-700 ${loadedAlbums.has(album.id) ? 'opacity-100' : 'opacity-0'}`}>
                           <video
                             src={album.media[0].url}
                             className="w-full h-full object-cover"
                             muted
                             playsInline
                             preload="metadata"
+                            onLoadedData={() => markAlbumLoaded(album.id)}
                           />
                           <div className="absolute inset-0 flex items-center justify-center bg-black/20">
                             <div className="w-12 h-12 rounded-full bg-white/30 flex items-center justify-center" />

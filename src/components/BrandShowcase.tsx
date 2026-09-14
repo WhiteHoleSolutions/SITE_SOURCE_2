@@ -12,6 +12,7 @@ interface Brand {
 
 export default function BrandShowcase() {
   const [brands, setBrands] = useState<Brand[]>([])
+  const [loadedLogos, setLoadedLogos] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     fetch('/api/brands/public')
@@ -21,6 +22,10 @@ export default function BrandShowcase() {
   }, [])
 
   if (brands.length === 0) return null
+
+  const markLogoLoaded = (id: string) => {
+    setLoadedLogos(current => current.has(id) ? current : new Set(current).add(id))
+  }
 
   return (
     <section className="bg-[#f8f6f1] py-20 sm:py-24">
@@ -38,7 +43,7 @@ export default function BrandShowcase() {
             const content = (
               <>
                 <div className="relative h-16 w-full sm:h-20">
-                  <Image src={brand.logoUrl} alt={`${brand.name} logo`} fill className="object-contain" sizes="(max-width: 640px) 45vw, 20vw" />
+                  <Image src={brand.logoUrl} alt={`${brand.name} logo`} fill className={`object-contain transition-opacity duration-700 ${loadedLogos.has(brand.id) ? 'opacity-100' : 'opacity-0'}`} sizes="(max-width: 640px) 45vw, 20vw" onLoadingComplete={() => markLogoLoaded(brand.id)} />
                 </div>
                 <span className="mt-3 block truncate text-center text-xs font-semibold text-[#444842]">{brand.name}</span>
               </>
