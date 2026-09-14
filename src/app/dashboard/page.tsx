@@ -194,16 +194,16 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-50">
+    <div className="portal-shell">
       {/* Header */}
-      <header className="bg-white shadow sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex justify-between items-center">
-          <h1 className="text-lg sm:text-2xl font-bold text-primary-600">{businessName}</h1>
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#111211]/95 text-white backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 py-4 sm:py-5 flex justify-between items-center">
+          <div><p className="editorial-kicker text-[#c6ff43]">Client portal</p><h1 className="mt-1 text-lg sm:text-xl font-semibold tracking-[-.03em]">{businessName}</h1></div>
           <div className="flex items-center gap-2 sm:gap-4">
-            <span className="hidden sm:inline text-dark-600 text-sm sm:text-base">Welcome, {customer.user.name}</span>
+            <span className="hidden sm:inline text-white/65 text-sm sm:text-base">Welcome, {customer.user.name}</span>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1 sm:gap-2 text-dark-600 hover:text-dark-900 px-2 py-1 sm:px-3 sm:py-2 rounded-lg hover:bg-dark-100 transition"
+              className="flex items-center gap-1 sm:gap-2 text-white/70 hover:text-white px-2 py-1 sm:px-3 sm:py-2 rounded-lg hover:bg-white/10 transition"
             >
               <LogOut size={18} className="sm:w-5 sm:h-5" />
               <span className="text-sm sm:text-base">Logout</span>
@@ -212,18 +212,18 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 py-8 sm:py-12">
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3 sm:gap-6 mb-6 sm:mb-8">
-          <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-            <h3 className="text-dark-600 text-xs sm:text-sm font-medium">Total Spent</h3>
-            <p className="text-xl sm:text-3xl font-bold text-dark-900 mt-2">
+          <div className="portal-card bg-[#111211] p-5 text-white sm:p-7">
+            <h3 className="text-white/60 text-xs sm:text-sm font-medium">Total spent</h3>
+            <p className="text-2xl sm:text-4xl font-semibold tracking-[-.04em] mt-3">
               {formatCurrency(customer.totalSpent)}
             </p>
           </div>
-          <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-            <h3 className="text-dark-600 text-xs sm:text-sm font-medium">Jobs Completed</h3>
-            <p className="text-xl sm:text-3xl font-bold text-dark-900 mt-2">
+          <div className="portal-card bg-white p-5 sm:p-7">
+            <h3 className="text-[#62665f] text-xs sm:text-sm font-medium">Projects completed</h3>
+            <p className="text-2xl sm:text-4xl font-semibold tracking-[-.04em] text-[#111211] mt-3">
               {customer.jobsCompleted}
             </p>
           </div>
@@ -234,8 +234,9 @@ export default function DashboardPage() {
           <section className="mb-6 sm:mb-8">
             <div className="flex items-end justify-between gap-4 mb-3 sm:mb-4">
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-dark-900">Your projects</h2>
-                <p className="mt-1 text-sm text-dark-600">Follow your work from planning through to delivery.</p>
+                <p className="editorial-kicker text-[#6f9e11]">Live workspace</p>
+                <h2 className="mt-2 text-2xl sm:text-3xl font-semibold tracking-[-.04em] text-[#111211]">Your projects</h2>
+                <p className="mt-1 text-sm text-[#62665f]">Follow your work from planning through to delivery.</p>
               </div>
               <Briefcase className="text-primary-500" size={24} aria-hidden="true" />
             </div>
@@ -243,19 +244,19 @@ export default function DashboardPage() {
               {jobs.map(job => {
                 const stage = jobStageIndex(job.status)
                 return (
-                  <article key={job.id} className="rounded-xl bg-white p-5 shadow">
+                  <article key={job.id} className="portal-card bg-white p-5 sm:p-6">
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="text-xs font-bold tracking-wide text-primary-600">{job.jobNumber}</p>
                         <h3 className="mt-1 text-lg font-semibold text-dark-900">{job.title}</h3>
                       </div>
-                      <span className="rounded-full bg-primary-50 px-3 py-1 text-xs font-bold text-primary-700">{jobStageLabel(job.status)}</span>
+                      <span className="rounded-full bg-[#ecf8ca] px-3 py-1 text-xs font-bold text-[#4c7405]">{jobStageLabel(job.status)}</span>
                     </div>
                     {job.clientGoal && <p className="mt-3 text-sm leading-6 text-dark-600">{job.clientGoal}</p>}
                     <div className="mt-5">
                       <div className="mb-2 flex justify-between text-xs font-medium text-dark-500"><span>Project progress</span><span>{CLIENT_STAGES[stage]}</span></div>
-                      <div className="h-2 overflow-hidden rounded-full bg-dark-200"><div className="h-full rounded-full bg-primary-500 transition-all" style={{ width: `${((stage + 1) / CLIENT_STAGES.length) * 100}%` }} /></div>
-                      <div className="mt-2 flex justify-between text-[10px] font-medium text-dark-400">{CLIENT_STAGES.map(item => <span key={item} className={CLIENT_STAGES.indexOf(item) <= stage ? 'text-primary-600' : ''}>{item}</span>)}</div>
+                      <div className="h-2 overflow-hidden rounded-full bg-[#e8e4dc]"><div className="h-full rounded-full bg-[#9fd32e] transition-all" style={{ width: `${((stage + 1) / CLIENT_STAGES.length) * 100}%` }} /></div>
+                      <div className="mt-2 flex justify-between text-[10px] font-medium text-dark-400">{CLIENT_STAGES.map(item => <span key={item} className={CLIENT_STAGES.indexOf(item) <= stage ? 'text-[#6f9e11]' : ''}>{item}</span>)}</div>
                     </div>
                     <div className="mt-5 flex flex-col gap-2 border-t border-dark-100 pt-4 text-sm text-dark-600 sm:flex-row sm:items-center sm:justify-between">
                       <span>{job.services.length ? job.services.map(service => readableService(service.serviceType)).join(' · ') : 'Project details being prepared'}</span>
@@ -271,12 +272,12 @@ export default function DashboardPage() {
         {/* Albums */}
         {albums.length > 0 && (
           <div className="mb-6 sm:mb-8">
-            <h2 className="text-xl sm:text-2xl font-bold text-dark-900 mb-3 sm:mb-4">Albums</h2>
+            <div className="mb-4"><p className="editorial-kicker text-[#6f9e11]">Delivered media</p><h2 className="mt-2 text-2xl sm:text-3xl font-semibold tracking-[-.04em] text-[#111211]">Albums</h2></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {albums.map((album: any) => (
                 <div
                   key={album.id}
-                  className="bg-white rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-lg transition active:scale-95"
+                  className="portal-card bg-white overflow-hidden cursor-pointer hover:-translate-y-1 hover:shadow-lg transition active:scale-95"
                   onClick={() => setSelectedAlbum(album)}
                 >
                   <div className="relative h-48">
@@ -332,10 +333,10 @@ export default function DashboardPage() {
 
         {/* Invoices */}
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-dark-900 mb-3 sm:mb-4">Your Invoices</h2>
+          <div className="mb-4"><p className="editorial-kicker text-[#6f9e11]">Finance</p><h2 className="mt-2 text-2xl sm:text-3xl font-semibold tracking-[-.04em] text-[#111211]">Your invoices</h2></div>
           
           {/* Desktop Table */}
-          <div className="hidden md:block bg-white rounded-lg shadow overflow-x-auto">
+          <div className="portal-card hidden md:block bg-white overflow-x-auto">
             <table className="min-w-full divide-y divide-dark-200">
               <thead className="bg-dark-50">
                 <tr>

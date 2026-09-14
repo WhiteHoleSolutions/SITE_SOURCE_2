@@ -27,13 +27,13 @@ export default function Footer() {
   }, [])
 
   return (
-    <footer className="bg-dark-900 text-white py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="bg-[#111211] text-white py-16">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h3 className="text-2xl font-bold mb-4">{businessInfo.businessName}</h3>
             <p className="text-dark-300">
-              Professional business media solutions tailored to your needs.
+              Creative production and digital tools that move your business forward.
             </p>
           </div>
 
@@ -67,7 +67,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-dark-800 text-center text-dark-400">
+        <div className="mt-12 pt-8 border-t border-white/15 text-center text-white/45">
           <p>&copy; {currentYear} {businessInfo.businessName}. All rights reserved.</p>
         </div>
       </div>

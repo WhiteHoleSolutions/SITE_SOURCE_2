@@ -47,19 +47,20 @@ export default function InquiryForm() {
   }
 
   return (
-    <section id="contact" className="py-12 sm:py-16 md:py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="contact" className="bg-[#c6ff43] py-24 sm:py-32">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mb-8 sm:mb-12 md:mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-dark-900 mb-3 sm:mb-4">
+          <p className="editorial-kicker mb-4 text-[#4c7405]">Start a project</p>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-[-.05em] text-[#111211] mb-4">
             Get in Touch
           </h2>
-          <p className="text-base sm:text-lg text-dark-600 max-w-2xl mx-auto px-4">
-            Ready to start your project? Send us an inquiry and we'll get back to you shortly.
+          <p className="text-base sm:text-lg text-[#253308] max-w-2xl mx-auto px-4">
+            Tell us what you are trying to make. We’ll shape the right production plan with you.
           </p>
         </motion.div>
 
@@ -68,7 +69,7 @@ export default function InquiryForm() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="max-w-2xl mx-auto"
+          className="max-w-2xl mx-auto rounded-2xl bg-[#f8f6f1] p-5 shadow-[0_20px_50px_rgba(34,54,7,.18)] sm:p-8"
         >
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>
@@ -138,7 +139,7 @@ export default function InquiryForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-primary-500 hover:bg-primary-600 active:scale-95 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-base sm:text-lg"
+              className="w-full bg-[#111211] hover:bg-[#2b2d2a] active:scale-95 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-base sm:text-lg"
             >
               {isSubmitting ? 'Submitting...' : 'Submit Inquiry'}
             </button>

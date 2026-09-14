@@ -88,7 +88,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative h-screen w-full overflow-hidden">
+    <section className="relative min-h-[760px] h-screen w-full overflow-hidden bg-[#111211]">
       {/* Background Media Slider */}
       {heroMedia.length > 0 ? (
         <div className="absolute inset-0">
@@ -147,37 +147,39 @@ export default function Hero() {
       )}
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-black/10" />
+      <div className="absolute inset-0 studio-grid opacity-30" />
 
       {/* Content */}
-      <div className="relative z-10 h-full flex items-center justify-center text-center px-4 sm:px-6">
+      <div className="relative z-10 mx-auto flex h-full max-w-7xl items-end px-5 pb-24 pt-32 sm:px-8 sm:pb-28 lg:px-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="max-w-4xl"
+          className="max-w-5xl text-left"
         >
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 sm:mb-6">
+          <p className="editorial-kicker mb-5 text-[#c6ff43]">Creative production · Digital systems</p>
+          <h1 className="max-w-4xl text-balance text-5xl font-semibold leading-[.92] tracking-[-.06em] text-white sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl mb-6">
             {businessName}
           </h1>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-6 sm:mb-8">
+          <p className="max-w-2xl text-lg leading-7 text-white/80 sm:text-xl sm:leading-8 md:text-2xl mb-8 sm:mb-10">
             From first idea to finished media, promotion and digital tools.
           </p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center"
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4"
           >
             <a
               href="#portfolio"
-              className="bg-primary-500 hover:bg-primary-600 active:scale-95 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition transform hover:scale-105"
+              className="bg-[#c6ff43] hover:bg-[#d5ff77] active:scale-95 text-[#111211] px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition transform hover:scale-105"
             >
               Explore our work
             </a>
             <a
               href="#contact"
-              className="bg-white/10 backdrop-blur-sm hover:bg-white/20 active:scale-95 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition border-2 border-white"
+              className="bg-white/10 backdrop-blur-sm hover:bg-white/20 active:scale-95 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition border border-white/50"
             >
               Start a project
             </a>
@@ -186,11 +188,11 @@ export default function Hero() {
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+      <div className="absolute bottom-8 right-5 z-10 sm:right-8 lg:right-10">
         <motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-          className="w-6 h-10 border-2 border-white rounded-full flex items-start justify-center p-2"
+          className="w-6 h-10 border border-white/70 rounded-full flex items-start justify-center p-2"
         >
           <motion.div className="w-1 h-2 bg-white rounded-full" />
         </motion.div>

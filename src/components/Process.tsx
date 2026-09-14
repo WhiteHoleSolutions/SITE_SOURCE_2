@@ -7,19 +7,20 @@ const steps = [
 
 export default function Process() {
   return (
-    <section id="process" className="bg-dark-900 py-20 text-white sm:py-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section id="process" className="relative overflow-hidden bg-[#111211] py-24 text-white sm:py-32">
+      <div className="absolute inset-0 studio-grid opacity-40" />
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
         <div className="flex max-w-3xl flex-col gap-4">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary-300">A clearer creative process</p>
-          <h2 className="text-balance text-3xl font-bold sm:text-5xl">Good work should feel organised from day one.</h2>
-          <p className="text-lg leading-8 text-dark-300">Whether the job is a single product image or a complete campaign, you always know what happens next.</p>
+          <p className="editorial-kicker text-[#c6ff43]">A clearer creative process</p>
+          <h2 className="text-balance text-4xl font-semibold tracking-[-.045em] sm:text-6xl">Good work should feel organised from day one.</h2>
+          <p className="text-lg leading-8 text-white/65">Whether the job is a single product image or a complete campaign, you always know what happens next.</p>
         </div>
-        <ol className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <ol className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-white/15 bg-white/15 md:grid-cols-2 lg:grid-cols-4">
           {steps.map(([number, title, description]) => (
-            <li key={number} className="rounded-2xl border border-white/15 bg-white/5 p-6">
-              <span className="text-sm font-bold tracking-widest text-primary-300">{number}</span>
-              <h3 className="mt-8 text-xl font-semibold">{title}</h3>
-              <p className="mt-3 leading-7 text-dark-300">{description}</p>
+            <li key={number} className="bg-[#151715] p-7 sm:p-8">
+              <span className="text-sm font-bold tracking-widest text-[#c6ff43]">{number}</span>
+              <h3 className="mt-12 text-xl font-semibold tracking-[-.025em]">{title}</h3>
+              <p className="mt-3 leading-7 text-white/60">{description}</p>
             </li>
           ))}
         </ol>

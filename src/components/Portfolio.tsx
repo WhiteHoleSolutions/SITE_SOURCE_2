@@ -34,23 +34,24 @@ export default function Portfolio() {
   }, [])
 
   return (
-    <section id="portfolio" className="py-12 sm:py-16 md:py-20 bg-dark-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="portfolio" className="bg-[#111211] py-24 sm:py-32">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mb-8 sm:mb-12 md:mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-dark-900 mb-3 sm:mb-4">
+          <p className="editorial-kicker mb-4 text-[#c6ff43]">Selected work</p>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-[-.045em] text-white mb-4">
             Our Portfolio
           </h2>
-          <p className="text-base sm:text-lg text-dark-600 max-w-2xl mx-auto px-4">
-            Explore our collection of professional media work
+          <p className="text-base sm:text-lg text-white/65 max-w-2xl mx-auto px-4">
+            A selection of visual work, campaign assets and practical production outcomes.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {albums.map((album, index) => (
             <motion.div
               key={album.id}
@@ -61,7 +62,7 @@ export default function Portfolio() {
               className="group cursor-pointer"
               onClick={() => setSelectedAlbum(album)}
             >
-              <div className="relative h-64 sm:h-72 md:h-80 rounded-lg overflow-hidden shadow-lg">
+              <div className="relative h-72 sm:h-80 md:h-[26rem] overflow-hidden bg-white/10">
                 {album.coverImage ? (
                   <Image
                     src={album.coverImage}
@@ -94,9 +95,9 @@ export default function Portfolio() {
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-primary-400 to-primary-600" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 md:p-6 text-white">
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2">{album.title}</h3>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 text-white">
+                  <h3 className="text-xl sm:text-2xl font-semibold tracking-[-.03em] mb-1 sm:mb-2">{album.title}</h3>
                   {album.description && (
                     <p className="text-sm sm:text-base text-white/90 line-clamp-2">{album.description}</p>
                   )}

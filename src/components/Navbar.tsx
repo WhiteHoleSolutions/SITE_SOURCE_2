@@ -30,37 +30,37 @@ export default function Navbar() {
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${
-      scrolled ? 'bg-white shadow-lg' : 'bg-transparent'
+      scrolled ? 'bg-[#f4f1eb]/95 shadow-[0_8px_30px_rgba(17,18,17,.08)] backdrop-blur-xl' : 'bg-transparent'
     }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
+        <div className="flex justify-between h-20 items-center">
           <Link href="/" className="flex items-center">
             <span className={`text-2xl font-bold transition-colors ${
-              scrolled ? 'text-primary-600' : 'text-white'
+              scrolled ? 'text-[#111211]' : 'text-white'
             }`}>
               {businessName}
             </span>
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/#services" className={`hover:text-primary-500 transition ${
+            <Link href="/#services" className={`text-sm font-medium hover:text-[#7fbb16] transition ${
               scrolled ? 'text-dark-900' : 'text-white'
             }`}>
               Services
             </Link>
-            <Link href="/#portfolio" className={`hover:text-primary-500 transition ${
+            <Link href="/#portfolio" className={`text-sm font-medium hover:text-[#7fbb16] transition ${
               scrolled ? 'text-dark-900' : 'text-white'
             }`}>
               Portfolio
             </Link>
-            <Link href="/#process" className={`hover:text-primary-500 transition ${
+            <Link href="/#process" className={`text-sm font-medium hover:text-[#7fbb16] transition ${
               scrolled ? 'text-dark-900' : 'text-white'
             }`}>
               Process
             </Link>
             <Link 
               href="/login" 
-              className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-full transition"
+              className="bg-[#c6ff43] hover:bg-[#d5ff77] text-[#111211] px-5 py-2.5 rounded-full text-sm font-semibold transition"
             >
               Client portal
             </Link>
@@ -80,7 +80,7 @@ export default function Navbar() {
       </div>
 
       {isOpen && (
-        <div className="md:hidden bg-white shadow-lg">
+        <div className="md:hidden bg-[#f4f1eb] shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1">
             <Link href="/#services" className="block px-3 py-2 text-dark-900 hover:bg-primary-50">
               Services

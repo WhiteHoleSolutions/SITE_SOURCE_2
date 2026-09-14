@@ -64,20 +64,21 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-700 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+    <div className="studio-grid min-h-screen flex items-center justify-center bg-[#111211] py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full space-y-6 sm:space-y-8 bg-white p-6 sm:p-8 rounded-2xl shadow-2xl"
+        className="max-w-md w-full space-y-6 sm:space-y-8 bg-[#f8f6f1] p-6 sm:p-9 rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,.38)]"
       >
         <div>
           <Link href="/" className="flex justify-center">
-            <span className="text-2xl sm:text-3xl font-bold text-primary-600">
+            <span className="text-2xl sm:text-3xl font-semibold tracking-[-.04em] text-[#111211]">
               {businessName}
             </span>
           </Link>
-          <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-extrabold text-dark-900">
-            Sign in to your account
+          <p className="editorial-kicker mt-6 text-center text-[#6f9e11]">Client portal</p>
+          <h2 className="mt-3 text-center text-3xl sm:text-4xl font-semibold tracking-[-.05em] text-[#111211]">
+            Welcome back
           </h2>
         </div>
         
@@ -94,7 +95,7 @@ export default function LoginPage() {
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="mt-1 block w-full px-4 py-3 border border-dark-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition text-base text-dark-900 placeholder-gray-400"
+                className="mt-1 block w-full bg-white px-4 py-3 border border-dark-300 rounded-lg focus:ring-2 focus:ring-[#9fd32e] focus:border-transparent transition text-base text-dark-900 placeholder-gray-400"
                 placeholder="you@example.com"
               />
             </div>
@@ -110,7 +111,7 @@ export default function LoginPage() {
                 required
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="mt-1 block w-full px-4 py-3 border border-dark-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition text-base text-dark-900 placeholder-gray-400"
+                className="mt-1 block w-full bg-white px-4 py-3 border border-dark-300 rounded-lg focus:ring-2 focus:ring-[#9fd32e] focus:border-transparent transition text-base text-dark-900 placeholder-gray-400"
                 placeholder="••••••••"
               />
             </div>
@@ -119,13 +120,13 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm sm:text-base font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition disabled:opacity-50 disabled:cursor-not-allowed active:scale-98"
+            className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-lg shadow-sm text-sm sm:text-base font-semibold text-[#111211] bg-[#c6ff43] hover:bg-[#d5ff77] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#9fd32e] transition disabled:opacity-50 disabled:cursor-not-allowed active:scale-98"
           >
             {isLoading ? 'Signing in...' : 'Sign in'}
           </button>
 
           <div className="text-center">
-            <Link href="/" className="text-sm text-primary-600 hover:text-primary-700 inline-flex items-center gap-1">
+            <Link href="/" className="text-sm text-[#4c7405] hover:text-[#111211] inline-flex items-center gap-1">
               ← Back to home
             </Link>
           </div>
