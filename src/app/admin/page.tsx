@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
-import { LogOut, Image, Users, MessageSquare, FileText, Settings, Receipt, DollarSign, BarChart3 } from 'lucide-react'
+import { LogOut, Image, Users, MessageSquare, FileText, Settings, Receipt, DollarSign, BarChart3, Briefcase } from 'lucide-react'
 import AlbumsTab from '@/components/admin/AlbumsTab'
 import CustomersTab from '@/components/admin/CustomersTab'
 import InquiriesTab from '@/components/admin/InquiriesTab'
@@ -12,12 +12,13 @@ import BusinessSettingsTab from '@/components/admin/BusinessSettingsTab'
 import BillsOfSaleTab from '@/components/admin/BillsOfSaleTab'
 import ExpensesTab from '@/components/admin/ExpensesTab'
 import AnalyticsTab from '@/components/admin/AnalyticsTab'
+import JobsTab from '@/components/admin/JobsTab'
 
-type Tab = 'albums' | 'customers' | 'inquiries' | 'invoices' | 'bills' | 'expenses' | 'analytics' | 'settings'
+type Tab = 'jobs' | 'albums' | 'customers' | 'inquiries' | 'invoices' | 'bills' | 'expenses' | 'analytics' | 'settings'
 
 export default function AdminPage() {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<Tab>('albums')
+  const [activeTab, setActiveTab] = useState<Tab>('jobs')
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
@@ -57,6 +58,7 @@ export default function AdminPage() {
   }
 
   const tabs = [
+    { id: 'jobs' as Tab, label: 'Jobs', icon: Briefcase },
     { id: 'albums' as Tab, label: 'Albums', icon: Image },
     { id: 'customers' as Tab, label: 'Customers', icon: Users },
     { id: 'inquiries' as Tab, label: 'Inquiries', icon: MessageSquare },
@@ -110,6 +112,7 @@ export default function AdminPage() {
           </nav>
 
           <div className="p-3 sm:p-6">
+            {activeTab === 'jobs' && <JobsTab />}
             {activeTab === 'albums' && <AlbumsTab />}
             {activeTab === 'customers' && <CustomersTab />}
             {activeTab === 'inquiries' && <InquiriesTab />}
