@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
-import { createPaymentLink } from '@/lib/revolut'
+import { createMerchantOrder, getMerchantSetupStatus } from '@/lib/revolut'
 
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -26,45 +26,57 @@ export async function POST(
     })
 
     if (!invoice) {
-      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Payment request not found' }, { status: 404 })
     }
 
     // Verify authorization
     if (session.role !== 'ADMIN' && invoice.customer.userId !== session.userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
     if (invoice.status === 'PAID') {
-      return NextResponse.json({ error: 'Invoice already paid' }, { status: 400 })
+      return NextResponse.json({ error: 'This payment request has already been paid.' }, { status: 409 })
     }
 
-    // Create Revolut payment link
-    const paymentLink = await createPaymentLink({
+    const merchantSetup = getMerchantSetupStatus()
+    if (!merchantSetup.ready) {
+      return NextResponse.json({ error: `Revolut payments are unavailable: add ${merchantSetup.missing.join(' and ')} in Render.` }, { status: 503 })
+    }
+
+    // Merchant checkout URLs can be reused after unsuccessful attempts.
+    if (invoice.revolutOrderId && invoice.paymentLink) {
+      return NextResponse.json({ paymentUrl: invoice.paymentLink, orderId: invoice.revolutOrderId })
+    }
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '')
+    const order = await createMerchantOrder({
       amount: invoice.total,
-      currency: 'USD',
-      description: `Invoice ${invoice.invoiceNumber}`,
-      reference_id: invoice.id,
-      customer_email: invoice.customer.user.email,
+      currency: invoice.currency,
+      description: `${invoice.invoiceNumber} · ${invoice.customer.user.name}`,
+      reference: invoice.id,
+      customerEmail: invoice.customer.user.email,
+      redirectUrl: appUrl ? `${appUrl}/dashboard?payment=${encodeURIComponent(invoice.id)}` : undefined,
     })
 
-    // Update invoice with payment ID
     await prisma.invoice.update({
       where: { id },
       data: {
-        revolutPaymentId: paymentLink.id,
+        revolutOrderId: order.id,
+        revolutOrderState: order.state,
+        paymentLink: order.checkout_url,
         status: 'SENT',
-        issuedAt: new Date(),
+        issuedAt: invoice.issuedAt || new Date(),
       },
     })
 
     return NextResponse.json({ 
-      paymentUrl: paymentLink.url,
-      paymentId: paymentLink.id,
+      paymentUrl: order.checkout_url,
+      orderId: order.id,
     })
   } catch (error: any) {
-    console.error('Payment error:', error)
+    console.error('Revolut Merchant payment request error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to create payment' },
+      { error: error.message || 'Failed to create payment request' },
       { status: 400 }
     )
   }

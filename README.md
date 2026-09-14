@@ -57,7 +57,7 @@ A comprehensive full-stack web application for managing business media portfolio
 - **Styling**: [Tailwind CSS](https://tailwindcss.com)
 - **Animations**: [Framer Motion](https://www.framer.com/motion/)
 - **PDF Generation**: jsPDF with autotable
-- **Payment Integration**: Revolut Business API (optional)
+- **Payment Integration**: Revolut Merchant hosted checkout (optional)
 - **Deployment**: [Render.com](https://render.com) with persistent disk storage
 
 ---
@@ -92,8 +92,9 @@ A comprehensive full-stack web application for managing business media portfolio
    DATABASE_URL="file:./dev.db"
    JWT_SECRET="your-secret-key"  # Generate with: openssl rand -base64 32
    NEXT_PUBLIC_APP_URL="http://localhost:3000"
-   REVOLUT_API_KEY="your-api-key"  # Optional
-   REVOLUT_API_URL="https://sandbox-b2b.revolut.com/api/1.0"
+   REVOLUT_MERCHANT_SECRET_KEY="your-merchant-secret-key"  # Optional
+   REVOLUT_MERCHANT_API_URL="https://sandbox-merchant.revolut.com/api"
+   REVOLUT_MERCHANT_API_VERSION="2026-08-17"
    ADMIN_EMAIL="admin@whiteholesolutions.com"
    ADMIN_PASSWORD="YourSecurePassword123!"
    \`\`\`
@@ -139,7 +140,7 @@ This project uses **SQLite with Render's persistent disk** - no external databas
    - \`NEXT_PUBLIC_APP_URL\`: Your Render app URL (e.g., \`https://your-app.onrender.com\`)
    - \`JWT_SECRET\`: Auto-generated (or set your own via \`openssl rand -base64 32\`)
    - \`ADMIN_PASSWORD\`: Auto-generated (check Render dashboard after deployment)
-   - \`REVOLUT_API_KEY\`: Your Revolut API key (optional)
+   - \`REVOLUT_MERCHANT_SECRET_KEY\`: Your Revolut Merchant API secret key (optional)
 
 4. **Wait for deployment** - The build script will:
    - Install dependencies
@@ -178,8 +179,9 @@ This project uses **SQLite with Render's persistent disk** - no external databas
    NODE_ENV=production
    NEXT_PUBLIC_APP_URL=https://your-app.onrender.com
    JWT_SECRET=your-generated-secret
-   REVOLUT_API_KEY=your-api-key-if-needed
-   REVOLUT_API_URL=https://sandbox-b2b.revolut.com/api/1.0
+   REVOLUT_MERCHANT_SECRET_KEY=your-merchant-secret-key
+   REVOLUT_MERCHANT_API_URL=https://merchant.revolut.com/api
+   REVOLUT_MERCHANT_API_VERSION=2026-08-17
    ADMIN_EMAIL=admin@yourdomain.com
    ADMIN_PASSWORD=YourSecurePassword123!
    \`\`\`
@@ -193,6 +195,25 @@ This project uses **SQLite with Render's persistent disk** - no external databas
 3. Log in with your \`ADMIN_EMAIL\` and \`ADMIN_PASSWORD\`
 4. **Important**: Change admin password in settings!
 5. Configure business information in Admin Panel → Settings
+
+### Revolut Merchant checkout
+
+After Revolut approves your Merchant account, add these Render environment variables (never commit the secret key):
+
+```env
+REVOLUT_MERCHANT_SECRET_KEY=your-production-merchant-secret-key
+REVOLUT_MERCHANT_API_URL=https://merchant.revolut.com/api
+REVOLUT_MERCHANT_API_VERSION=2026-08-17
+REVOLUT_MERCHANT_WEBHOOK_SECRET=your-webhook-signing-secret
+```
+
+In Revolut Merchant API, register this webhook URL and subscribe to `ORDER_COMPLETED`, `ORDER_CANCELLED`, and `ORDER_FAILED`:
+
+```
+https://your-app.onrender.com/api/revolut/webhook
+```
+
+Creating the webhook returns a signing secret. Add that secret to Render as `REVOLUT_MERCHANT_WEBHOOK_SECRET`. The app checks Revolut's HMAC signature and timestamp, then retrieves the Merchant order before it marks a payment request paid. Create a payment request in Admin → Invoices, then use **Create Revolut checkout** to generate its unique customer checkout URL.
 
 ---
 

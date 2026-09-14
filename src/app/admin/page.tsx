@@ -14,6 +14,7 @@ import ExpensesTab from '@/components/admin/ExpensesTab'
 import AnalyticsTab from '@/components/admin/AnalyticsTab'
 import JobsTab from '@/components/admin/JobsTab'
 import BrandsTab from '@/components/admin/BrandsTab'
+import RevolutStatus from '@/components/admin/RevolutStatus'
 
 type Tab = 'jobs' | 'brands' | 'albums' | 'customers' | 'inquiries' | 'invoices' | 'bills' | 'expenses' | 'analytics' | 'settings'
 
@@ -78,6 +79,7 @@ export default function AdminPage() {
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 py-4 sm:py-5 flex justify-between items-center">
           <div><p className="editorial-kicker text-[#65a7ff]">White Hole Solutions</p><h1 className="mt-1 text-lg sm:text-xl font-semibold tracking-[-.03em]">Operations studio</h1></div>
           <div className="flex items-center gap-2 sm:gap-4">
+            <RevolutStatus />
             <span className="hidden sm:inline text-white/65">Welcome, {user?.name}</span>
             <button
               onClick={handleLogout}

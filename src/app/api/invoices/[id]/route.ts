@@ -17,6 +17,14 @@ export async function PATCH(
 
     const data = await request.json()
 
+    const existingInvoice = await prisma.invoice.findUnique({ where: { id } })
+    if (!existingInvoice) {
+      return NextResponse.json({ error: 'Payment request not found' }, { status: 404 })
+    }
+    if (existingInvoice.revolutOrderId || existingInvoice.status === 'PAID') {
+      return NextResponse.json({ error: 'Create a new payment request instead. A request with a Revolut checkout cannot be edited.' }, { status: 409 })
+    }
+
     // Calculate totals
     const items = data.items.map((item: any) => ({
       description: item.description,
@@ -45,7 +53,6 @@ export async function PATCH(
         total,
         notes: data.notes,
         dueDate: data.dueDate ? new Date(data.dueDate) : null,
-        paymentLink: data.paymentLink,
         items: {
           create: items,
         },
@@ -81,6 +88,14 @@ export async function DELETE(
 
     if (!session || session.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const invoice = await prisma.invoice.findUnique({ where: { id } })
+    if (!invoice) {
+      return NextResponse.json({ error: 'Payment request not found' }, { status: 404 })
+    }
+    if (invoice.revolutOrderId || invoice.status === 'PAID') {
+      return NextResponse.json({ error: 'A sent or paid payment request cannot be deleted.' }, { status: 409 })
     }
 
     await prisma.invoice.delete({

@@ -20,10 +20,14 @@ services:
         sync: false
       - key: JWT_SECRET
         generateValue: true
-      - key: REVOLUT_API_KEY
+      - key: REVOLUT_MERCHANT_SECRET_KEY
         sync: false
-      - key: REVOLUT_API_URL
-        value: https://sandbox-b2b.revolut.com/api/1.0
+      - key: REVOLUT_MERCHANT_API_URL
+        value: https://merchant.revolut.com/api
+      - key: REVOLUT_MERCHANT_API_VERSION
+        value: 2026-08-17
+      - key: REVOLUT_MERCHANT_WEBHOOK_SECRET
+        sync: false
       - key: ADMIN_EMAIL
         value: admin@whiteholesolutions.com
       - key: ADMIN_PASSWORD

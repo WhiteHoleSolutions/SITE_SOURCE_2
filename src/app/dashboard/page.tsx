@@ -134,14 +134,6 @@ export default function DashboardPage() {
   }
 
   const handlePayInvoice = async (invoice: any) => {
-    // If the invoice has a payment link, use that
-    if (invoice.paymentLink) {
-      window.open(invoice.paymentLink, '_blank')
-      toast.success('Opening payment link...')
-      return
-    }
-
-    // Otherwise, fall back to the old Revolut API integration
     try {
       const response = await fetch(`/api/invoices/${invoice.id}/pay`, {
         method: 'POST',

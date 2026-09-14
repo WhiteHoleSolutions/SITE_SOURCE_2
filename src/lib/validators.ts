@@ -38,7 +38,7 @@ export const invoiceSchema = z.object({
   tax: z.number().min(0).default(0),
   notes: z.string().optional(),
   dueDate: z.string().optional(),
-  paymentLink: z.string().url().optional().or(z.literal('')),
+  currency: z.literal('AUD').default('AUD'),
 })
 
 export const jobSchema = z.object({

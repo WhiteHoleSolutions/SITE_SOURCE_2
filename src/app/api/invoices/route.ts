@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
         total,
         notes: data.notes,
         dueDate: data.dueDate ? new Date(data.dueDate) : null,
-        paymentLink: data.paymentLink || null,
+        currency: data.currency,
         items: {
           create: data.items.map(item => ({
             description: item.description,

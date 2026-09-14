@@ -1,584 +1,158 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { toast } from 'react-hot-toast';
-import { Plus, Trash2, Download, Edit2 } from 'lucide-react';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { useEffect, useMemo, useState } from 'react'
+import { toast } from 'react-hot-toast'
+import { Download, Edit2, ExternalLink, FileText, Plus, Trash2 } from 'lucide-react'
+import { formatCurrency, formatDate } from '@/lib/utils'
 
-interface InvoiceItem {
-  description: string;
-  quantity: number;
-  unitPrice: number;
+type InvoiceItem = { description: string; quantity: number; unitPrice: number }
+type Invoice = {
+  id: string; invoiceNumber: string; customerId: string; items: InvoiceItem[]; notes: string | null
+  dueDate: string | null; paymentLink: string | null; revolutOrderId: string | null
+  status: string; paidAt: string | null; createdAt: string; total: number; tax: number
+  customer: { user: { name: string; email: string } }
 }
+type Customer = { id: string; user: { name: string; email: string } }
+type Draft = { customerId: string; items: InvoiceItem[]; notes: string; dueDate: string }
 
-interface Invoice {
-  id: string;
-  invoiceNumber: string;
-  customerId: string;
-  customer: {
-    id: string;
-    user: {
-      name: string;
-      email: string;
-    };
-  };
-  items: InvoiceItem[];
-  tax: number;
-  notes: string | null;
-  dueDate: string;
-  paymentLink: string | null;
-  status: string;
-  paidAt: string | null;
-  createdAt: string;
-  total: number;
-}
-
-interface Customer {
-  id: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    phone: string;
-  };
-}
-
-interface NewInvoice {
-  customerId: string;
-  items: InvoiceItem[];
-  tax: number;
-  notes: string;
-  dueDate: string;
-  paymentLink: string;
-  status: string;
-}
+const emptyDraft = (): Draft => ({ customerId: '', items: [{ description: '', quantity: 1, unitPrice: 0 }], notes: '', dueDate: '' })
 
 export default function InvoicesTab() {
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [showModal, setShowModal] = useState(false);
-  const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
-  const [newInvoice, setNewInvoice] = useState<NewInvoice>({
-    customerId: '',
-    items: [{ description: '', quantity: 1, unitPrice: 0 }],
-    tax: 0,
-    notes: '',
-    dueDate: '',
-    paymentLink: '',
-    status: 'DRAFT',
-  });
+  const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [customers, setCustomers] = useState<Customer[]>([])
+  const [taxRate, setTaxRate] = useState(10)
+  const [showModal, setShowModal] = useState(false)
+  const [editing, setEditing] = useState<Invoice | null>(null)
+  const [draft, setDraft] = useState<Draft>(emptyDraft)
+  const [saving, setSaving] = useState(false)
+  const [merchantStatus, setMerchantStatus] = useState<{ connected: boolean; message: string } | null>(null)
+
+  const subtotal = useMemo(() => draft.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), [draft.items])
+  const tax = useMemo(() => subtotal * taxRate / 100, [subtotal, taxRate])
+  const total = subtotal + tax
+
+  const load = async () => {
+    try {
+      const [invoicesResponse, customersResponse, settingsResponse] = await Promise.all([
+        fetch('/api/invoices'), fetch('/api/customers'), fetch('/api/business-info'),
+      ])
+      if (!invoicesResponse.ok || !customersResponse.ok) throw new Error()
+      const [invoiceData, customerData, settingsData] = await Promise.all([
+        invoicesResponse.json(), customersResponse.json(), settingsResponse.json(),
+      ])
+      setInvoices(invoiceData.invoices || [])
+      setCustomers(customerData.customers || [])
+      if (typeof settingsData.businessInfo?.taxRate === 'number') setTaxRate(settingsData.businessInfo.taxRate)
+    } catch {
+      toast.error('Failed to load payment requests')
+    }
+  }
 
   useEffect(() => {
-    fetchInvoices();
-    fetchCustomers();
-  }, []);
+    load()
+    fetch('/api/revolut/status').then(response => response.ok ? response.json() : null).then(setMerchantStatus).catch(() => setMerchantStatus({ connected: false, message: 'Connection status unavailable' }))
+  }, [])
 
-  const fetchInvoices = async () => {
+  const close = () => {
+    setShowModal(false)
+    setEditing(null)
+    setDraft(emptyDraft())
+  }
+
+  const save = async () => {
+    if (!draft.customerId || draft.items.some(item => !item.description.trim() || item.quantity < 1)) {
+      toast.error('Choose a client and complete each line item')
+      return
+    }
+    setSaving(true)
     try {
-      const response = await fetch('/api/invoices');
-      if (!response.ok) throw new Error('Failed to fetch invoices');
-      const data = await response.json();
-      setInvoices(data.invoices || []);
-    } catch (error) {
-      toast.error('Failed to load invoices');
-    }
-  };
+      const payload = { ...draft, tax, currency: 'AUD' }
+      const response = await fetch(editing ? `/api/invoices/${editing.id}` : '/api/invoices', {
+        method: editing ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error)
+      toast.success(editing ? 'Payment request updated' : 'Payment request created')
+      close(); load()
+    } catch (error: any) {
+      toast.error(error.message || 'Unable to save payment request')
+    } finally { setSaving(false) }
+  }
 
-  const fetchCustomers = async () => {
+  const openCheckout = async (invoice: Invoice) => {
+    const popup = window.open('', '_blank')
     try {
-      const response = await fetch('/api/customers');
-      if (!response.ok) throw new Error('Failed to fetch customers');
-      const data = await response.json();
-      setCustomers(data.customers || []);
-    } catch (error) {
-      toast.error('Failed to load customers');
+      const response = await fetch(`/api/invoices/${invoice.id}/pay`, { method: 'POST' })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error)
+      if (popup) popup.location.href = data.paymentUrl
+      else window.open(data.paymentUrl, '_blank')
+      toast.success(invoice.paymentLink ? 'Opening Revolut checkout' : 'Revolut checkout created')
+      load()
+    } catch (error: any) {
+      popup?.close()
+      toast.error(error.message || 'Unable to open Revolut checkout')
     }
-  };
+  }
 
-  const handleDownloadPDF = async (id: string, invoiceNumber: string) => {
+  const download = async (invoice: Invoice) => {
     try {
-      const response = await fetch(`/api/invoices/${id}/pdf`);
-      if (!response.ok) throw new Error('Failed to download PDF');
-      
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `invoice-${invoiceNumber}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      
-      toast.success('PDF downloaded successfully');
-    } catch (error) {
-      toast.error('Failed to download PDF');
-    }
-  };
+      const response = await fetch(`/api/invoices/${invoice.id}/pdf`)
+      if (!response.ok) throw new Error()
+      const url = URL.createObjectURL(await response.blob())
+      const link = document.createElement('a')
+      link.href = url; link.download = `Invoice-${invoice.invoiceNumber}.pdf`; link.click(); URL.revokeObjectURL(url)
+    } catch { toast.error('Unable to download PDF') }
+  }
 
-  const handleCreateInvoice = async () => {
+  const remove = async (invoice: Invoice) => {
+    if (!confirm(`Delete ${invoice.invoiceNumber}?`)) return
     try {
-      const response = await fetch('/api/invoices', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newInvoice),
-      });
+      const response = await fetch(`/api/invoices/${invoice.id}`, { method: 'DELETE' })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error)
+      toast.success('Payment request deleted'); load()
+    } catch (error: any) { toast.error(error.message || 'Unable to delete payment request') }
+  }
 
-      if (!response.ok) throw new Error('Failed to create invoice');
+  const edit = (invoice: Invoice) => {
+    setEditing(invoice)
+    setDraft({ customerId: invoice.customerId, items: invoice.items, notes: invoice.notes || '', dueDate: invoice.dueDate?.slice(0, 10) || '' })
+    setShowModal(true)
+  }
 
-      toast.success('Invoice created successfully');
-      fetchInvoices();
-      closeModal();
-    } catch (error) {
-      toast.error('Failed to create invoice');
-    }
-  };
+  const updateItem = (index: number, change: Partial<InvoiceItem>) => {
+    setDraft(current => ({ ...current, items: current.items.map((item, itemIndex) => itemIndex === index ? { ...item, ...change } : item) }))
+  }
 
-  const handleEditInvoice = (invoice: Invoice) => {
-    setEditingInvoice(invoice);
-    setNewInvoice({
-      customerId: invoice.customerId,
-      items: invoice.items,
-      tax: invoice.tax,
-      notes: invoice.notes || '',
-      dueDate: invoice.dueDate,
-      paymentLink: invoice.paymentLink || '',
-      status: invoice.status,
-    });
-    setShowModal(true);
-  };
-
-  const handleUpdateInvoice = async () => {
-    if (!editingInvoice) return;
-
-    try {
-      const response = await fetch(`/api/invoices/${editingInvoice.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newInvoice),
-      });
-
-      if (!response.ok) throw new Error('Failed to update invoice');
-
-      toast.success('Invoice updated successfully');
-      fetchInvoices();
-      closeModal();
-    } catch (error) {
-      toast.error('Failed to update invoice');
-    }
-  };
-
-  const handleDeleteInvoice = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this invoice?')) return;
-
-    try {
-      const response = await fetch(`/api/invoices/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) throw new Error('Failed to delete invoice');
-
-      toast.success('Invoice deleted successfully');
-      fetchInvoices();
-    } catch (error) {
-      toast.error('Failed to delete invoice');
-    }
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setEditingInvoice(null);
-    setNewInvoice({
-      customerId: '',
-      items: [{ description: '', quantity: 1, unitPrice: 0 }],
-      tax: 0,
-      notes: '',
-      dueDate: '',
-      paymentLink: '',
-      status: 'DRAFT',
-    });
-  };
-
-  const addInvoiceItem = () => {
-    setNewInvoice({
-      ...newInvoice,
-      items: [...newInvoice.items, { description: '', quantity: 1, unitPrice: 0 }],
-    });
-  };
-
-  const removeInvoiceItem = (index: number) => {
-    setNewInvoice({
-      ...newInvoice,
-      items: newInvoice.items.filter((_, i) => i !== index),
-    });
-  };
-
-  const updateInvoiceItem = (index: number, field: keyof InvoiceItem, value: string | number) => {
-    const updatedItems = [...newInvoice.items];
-    updatedItems[index] = { ...updatedItems[index], [field]: value };
-    setNewInvoice({ ...newInvoice, items: updatedItems });
-  };
-
-  const calculateSubtotal = () => {
-    return newInvoice.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
-  };
-
-  const calculateTotal = () => {
-    return calculateSubtotal() + newInvoice.tax;
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'PAID':
-        return 'bg-blue-100 text-blue-800';
-      case 'SENT':
-        return 'bg-blue-100 text-blue-800';
-      case 'OVERDUE':
-        return 'bg-red-100 text-red-800';
-      case 'DRAFT':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-dark-900">Invoices</h2>
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Create Invoice
-        </button>
-      </div>
-
-      {/* Desktop Table */}
-      <div className="hidden md:block bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Invoice #
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Customer
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Amount
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Paid Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {invoices.map((invoice) => (
-              <tr key={invoice.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-dark-900">
-                  {invoice.invoiceNumber}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-900">
-                  {invoice.customer.user.name}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-900">
-                  {formatDate(invoice.createdAt)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-900">
-                  {formatCurrency(invoice.total)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(invoice.status)}`}>
-                    {invoice.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-900">
-                  {invoice.paidAt ? formatDate(invoice.paidAt) : '-'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                  <button
-                    onClick={() => handleDownloadPDF(invoice.id, invoice.invoiceNumber)}
-                    className="text-primary-500 hover:text-primary-700"
-                  >
-                    <Download className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleEditInvoice(invoice)}
-                    className="text-blue-600 hover:text-blue-900"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteInvoice(invoice.id)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile Cards */}
-      <div className="md:hidden space-y-4">
-        {invoices.map((invoice) => (
-          <div key={invoice.id} className="bg-white rounded-lg shadow p-4 space-y-3">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="font-semibold text-dark-900">{invoice.invoiceNumber}</p>
-                <p className="text-sm text-dark-900">{invoice.customer.user.name}</p>
-              </div>
-              <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(invoice.status)}`}>
-                {invoice.status}
-              </span>
-            </div>
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <div>
-                <p className="text-gray-500">Date</p>
-                <p className="text-dark-900">{formatDate(invoice.createdAt)}</p>
-              </div>
-              <div>
-                <p className="text-gray-500">Amount</p>
-                <p className="text-dark-900">{formatCurrency(invoice.total)}</p>
-              </div>
-              <div className="col-span-2">
-                <p className="text-gray-500">Paid Date</p>
-                <p className="text-dark-900">{invoice.paidAt ? formatDate(invoice.paidAt) : '-'}</p>
-              </div>
-            </div>
-            <div className="flex gap-2 pt-2 border-t">
-              <button
-                onClick={() => handleDownloadPDF(invoice.id, invoice.invoiceNumber)}
-                className="flex-1 bg-primary-500 text-white px-3 py-2 rounded-lg hover:bg-primary-600 flex items-center justify-center gap-2"
-              >
-                <Download className="w-4 h-4" />
-                PDF
-              </button>
-              <button
-                onClick={() => handleEditInvoice(invoice)}
-                className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"
-              >
-                <Edit2 className="w-4 h-4" />
-                Edit
-              </button>
-              <button
-                onClick={() => handleDeleteInvoice(invoice.id)}
-                className="flex-1 bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 flex items-center justify-center gap-2"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Create/Edit Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 space-y-6">
-              <h3 className="text-xl font-bold text-dark-900">
-                {editingInvoice ? 'Edit Invoice' : 'Create Invoice'}
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-dark-900 mb-2">
-                    Customer *
-                  </label>
-                  <select
-                    value={newInvoice.customerId}
-                    onChange={(e) => setNewInvoice({ ...newInvoice, customerId: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-dark-900 placeholder-gray-400"
-                    required
-                  >
-                    <option value="">Select a customer</option>
-                    {customers.map((customer) => (
-                      <option key={customer.id} value={customer.id}>
-                        {customer.user.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-dark-900 mb-2">
-                    Status *
-                  </label>
-                  <select
-                    value={newInvoice.status}
-                    onChange={(e) => setNewInvoice({ ...newInvoice, status: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-dark-900 placeholder-gray-400"
-                    required
-                  >
-                    <option value="DRAFT">DRAFT</option>
-                    <option value="SENT">SENT</option>
-                    <option value="PAID">PAID</option>
-                    <option value="OVERDUE">OVERDUE</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-medium text-dark-900">
-                    Invoice Items
-                  </label>
-                  <button
-                    onClick={addInvoiceItem}
-                    className="text-primary-500 hover:text-primary-700 flex items-center gap-1 text-sm"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add Item
-                  </button>
-                </div>
-
-                <div className="space-y-3">
-                  {newInvoice.items.map((item, index) => (
-                    <div key={index} className="grid grid-cols-12 gap-2 items-start">
-                      <div className="col-span-12 md:col-span-5">
-                        <input
-                          type="text"
-                          placeholder="Description"
-                          value={item.description}
-                          onChange={(e) => updateInvoiceItem(index, 'description', e.target.value)}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-dark-900 placeholder-gray-400"
-                        />
-                      </div>
-                      <div className="col-span-5 md:col-span-3">
-                        <input
-                          type="number"
-                          placeholder="Quantity"
-                          value={item.quantity}
-                          onChange={(e) => updateInvoiceItem(index, 'quantity', parseFloat(e.target.value) || 0)}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-dark-900 placeholder-gray-400"
-                        />
-                      </div>
-                      <div className="col-span-5 md:col-span-3">
-                        <input
-                          type="number"
-                          placeholder="Unit Price"
-                          value={item.unitPrice}
-                          onChange={(e) => updateInvoiceItem(index, 'unitPrice', parseFloat(e.target.value) || 0)}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-dark-900 placeholder-gray-400"
-                          step="0.01"
-                        />
-                      </div>
-                      {newInvoice.items.length > 1 && (
-                        <div className="col-span-2 md:col-span-1">
-                          <button
-                            onClick={() => removeInvoiceItem(index)}
-                            className="text-red-600 hover:text-red-900 p-2"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-dark-900 mb-2">
-                    Tax
-                  </label>
-                  <input
-                    type="number"
-                    value={newInvoice.tax}
-                    onChange={(e) => setNewInvoice({ ...newInvoice, tax: parseFloat(e.target.value) || 0 })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-dark-900 placeholder-gray-400"
-                    step="0.01"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-dark-900 mb-2">
-                    Due Date
-                  </label>
-                  <input
-                    type="date"
-                    value={newInvoice.dueDate}
-                    onChange={(e) => setNewInvoice({ ...newInvoice, dueDate: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-dark-900 placeholder-gray-400"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-dark-900 mb-2">
-                  Payment Link (Revolut)
-                </label>
-                <input
-                  type="text"
-                  value={newInvoice.paymentLink}
-                  onChange={(e) => setNewInvoice({ ...newInvoice, paymentLink: e.target.value })}
-                  placeholder="https://revolut.me/..."
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-dark-900 placeholder-gray-400"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-dark-900 mb-2">
-                  Notes
-                </label>
-                <textarea
-                  value={newInvoice.notes}
-                  onChange={(e) => setNewInvoice({ ...newInvoice, notes: e.target.value })}
-                  rows={3}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-dark-900 placeholder-gray-400"
-                  placeholder="Additional notes..."
-                />
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-dark-900">Subtotal:</span>
-                  <span className="text-dark-900">{formatCurrency(calculateSubtotal())}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-dark-900">Tax:</span>
-                  <span className="text-dark-900">{formatCurrency(newInvoice.tax)}</span>
-                </div>
-                <div className="flex justify-between text-lg font-bold border-t pt-2">
-                  <span className="text-dark-900">Total:</span>
-                  <span className="text-dark-900">{formatCurrency(calculateTotal())}</span>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={editingInvoice ? handleUpdateInvoice : handleCreateInvoice}
-                  className="flex-1 bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600"
-                >
-                  {editingInvoice ? 'Update Invoice' : 'Create Invoice'}
-                </button>
-                <button
-                  onClick={closeModal}
-                  className="flex-1 bg-gray-300 text-dark-900 px-4 py-2 rounded-lg hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+  return <div className="space-y-6">
+    <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+      <div><p className="editorial-kicker text-[#216ac4]">Collections</p><h2 className="mt-2 text-2xl font-semibold tracking-[-.04em] text-dark-900">Payment requests</h2><p className="mt-1 text-sm text-dark-600">Create a clear request, then send clients to Revolut’s secure checkout.</p></div>
+      <button onClick={() => setShowModal(true)} className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-600"><Plus size={17} /> New payment request</button>
     </div>
-  );
+
+    <div className="rounded-xl border border-dark-100 bg-[#eef5ff] p-4 text-sm text-dark-700">Issuer details, GST ({taxRate}%), logo, and payment terms are taken from <strong>Business Settings</strong>. All new requests are in AUD.</div>
+    {!merchantStatus?.connected && <div className="rounded-xl border border-dark-100 bg-dark-50 p-4 text-sm text-dark-700"><strong>Revolut checkout is unavailable.</strong> {merchantStatus?.message || 'Checking the Merchant connection…'} You can still create, edit, download, and manage payment requests.</div>}
+
+    <div className="grid gap-4 lg:grid-cols-2">
+      {invoices.map(invoice => <article key={invoice.id} className="rounded-xl border border-dark-100 bg-white p-5 shadow-sm">
+        <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-bold tracking-wide text-primary-600">{invoice.invoiceNumber}</p><h3 className="mt-1 font-semibold text-dark-900">{invoice.customer.user.name}</h3><p className="mt-1 text-sm text-dark-500">Created {formatDate(invoice.createdAt)}</p></div><span className={`rounded-full px-3 py-1 text-xs font-bold ${invoice.status === 'PAID' ? 'bg-blue-100 text-blue-800' : invoice.status === 'SENT' ? 'bg-[#dbeafe] text-[#216ac4]' : 'bg-dark-100 text-dark-600'}`}>{invoice.status === 'SENT' ? 'AWAITING PAYMENT' : invoice.status}</span></div>
+        <div className="mt-5 flex items-end justify-between border-y border-dark-100 py-4"><div><p className="text-xs text-dark-500">Total due</p><p className="mt-1 text-2xl font-semibold tracking-[-.04em] text-dark-900">{formatCurrency(invoice.total)}</p></div><p className="text-right text-xs text-dark-500">{invoice.dueDate ? `Due ${formatDate(invoice.dueDate)}` : 'No due date'}<br />{invoice.paidAt ? `Paid ${formatDate(invoice.paidAt)}` : 'AUD'}</p></div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {invoice.status !== 'PAID' && <button disabled={!merchantStatus?.connected} onClick={() => openCheckout(invoice)} className="inline-flex items-center gap-2 rounded-lg bg-primary-500 px-3 py-2 text-sm font-semibold text-white hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-45"><ExternalLink size={15} />{invoice.paymentLink ? 'Open Revolut checkout' : 'Create Revolut checkout'}</button>}
+          <button onClick={() => download(invoice)} className="inline-flex items-center gap-2 rounded-lg border border-dark-200 px-3 py-2 text-sm font-medium text-dark-700 hover:bg-dark-50"><Download size={15} /> PDF</button>
+          {!invoice.revolutOrderId && invoice.status !== 'PAID' && <><button onClick={() => edit(invoice)} className="inline-flex items-center gap-2 rounded-lg border border-dark-200 px-3 py-2 text-sm font-medium text-dark-700 hover:bg-dark-50"><Edit2 size={15} /> Edit</button><button onClick={() => remove(invoice)} className="inline-flex items-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50"><Trash2 size={15} /> Delete</button></>}
+        </div>
+      </article>)}
+      {!invoices.length && <div className="col-span-full rounded-xl border border-dashed border-dark-200 bg-white p-12 text-center"><FileText className="mx-auto text-primary-500" size={28} /><h3 className="mt-3 font-semibold text-dark-900">No payment requests yet</h3><p className="mt-1 text-sm text-dark-600">Create one when a job is ready to collect payment.</p></div>}
+    </div>
+
+    {showModal && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"><div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><p className="editorial-kicker text-[#216ac4]">{editing ? 'Update draft' : 'New payment request'}</p><h3 className="mt-2 text-xl font-semibold text-dark-900">{editing ? editing.invoiceNumber : 'Prepare a request'}</h3></div><button onClick={close} className="text-sm font-medium text-dark-500 hover:text-dark-900">Cancel</button></div>
+      <div className="mt-6 space-y-5"><div><label className="block text-sm font-medium text-dark-800">Client</label><select value={draft.customerId} onChange={event => setDraft({ ...draft, customerId: event.target.value })} className="mt-2 w-full rounded-lg border border-dark-200 px-3 py-2.5"><option value="">Select a client</option>{customers.map(customer => <option key={customer.id} value={customer.id}>{customer.user.name} · {customer.user.email}</option>)}</select></div>
+        <div><div className="mb-2 flex items-center justify-between"><label className="text-sm font-medium text-dark-800">What are they paying for?</label><button onClick={() => setDraft({ ...draft, items: [...draft.items, { description: '', quantity: 1, unitPrice: 0 }] })} className="text-sm font-semibold text-primary-600 hover:text-primary-700">+ Add line</button></div><div className="space-y-2">{draft.items.map((item, index) => <div key={index} className="grid grid-cols-12 gap-2"><input value={item.description} onChange={event => updateItem(index, { description: event.target.value })} placeholder="Service or deliverable" className="col-span-12 rounded-lg border border-dark-200 px-3 py-2.5 sm:col-span-6" /><input type="number" min="1" value={item.quantity} onChange={event => updateItem(index, { quantity: Number(event.target.value) || 0 })} className="col-span-3 rounded-lg border border-dark-200 px-3 py-2.5 sm:col-span-2" /><input type="number" min="0" step="0.01" value={item.unitPrice} onChange={event => updateItem(index, { unitPrice: Number(event.target.value) || 0 })} className="col-span-5 rounded-lg border border-dark-200 px-3 py-2.5 sm:col-span-3" />{draft.items.length > 1 && <button onClick={() => setDraft({ ...draft, items: draft.items.filter((_, itemIndex) => itemIndex !== index) })} className="col-span-2 rounded-lg text-red-600 hover:bg-red-50">×</button>}</div>)}</div></div>
+        <div className="grid gap-4 sm:grid-cols-2"><div><label className="block text-sm font-medium text-dark-800">Due date <span className="font-normal text-dark-500">(optional)</span></label><input type="date" value={draft.dueDate} onChange={event => setDraft({ ...draft, dueDate: event.target.value })} className="mt-2 w-full rounded-lg border border-dark-200 px-3 py-2.5" /></div><div className="rounded-lg bg-dark-50 p-3 text-sm"><div className="flex justify-between"><span>Subtotal</span><strong>{formatCurrency(subtotal)}</strong></div><div className="mt-1 flex justify-between"><span>GST ({taxRate}%)</span><strong>{formatCurrency(tax)}</strong></div><div className="mt-2 flex justify-between border-t border-dark-200 pt-2 text-base"><span>Total due</span><strong>{formatCurrency(total)}</strong></div></div></div>
+        <div><label className="block text-sm font-medium text-dark-800">Message for the client <span className="font-normal text-dark-500">(optional)</span></label><textarea value={draft.notes} onChange={event => setDraft({ ...draft, notes: event.target.value })} rows={3} className="mt-2 w-full rounded-lg border border-dark-200 px-3 py-2.5" placeholder="Thank you for choosing White Hole Solutions." /></div>
+        <button disabled={saving} onClick={save} className="w-full rounded-lg bg-primary-500 px-4 py-3 text-sm font-semibold text-white hover:bg-primary-600 disabled:opacity-60">{saving ? 'Saving…' : editing ? 'Save changes' : 'Create payment request'}</button>
+      </div></div></div>}
+  </div>
 }

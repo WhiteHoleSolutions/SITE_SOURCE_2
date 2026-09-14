@@ -144,8 +144,11 @@ model Invoice {
   
   // Payment
   paidAt          DateTime?
-  revolutPaymentId String?      @unique
-  paymentLink     String?       // Revolut payment link URL
+  revolutPaymentId String?      @unique // Legacy payment-link identifier
+  revolutOrderId   String?      @unique // Revolut Merchant order identifier
+  revolutOrderState String?
+  paymentLink     String?       // Revolut Merchant hosted checkout URL
+  currency        String        @default("AUD")
   
   // Dates
   issuedAt        DateTime?
