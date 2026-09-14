@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import Services from '@/components/Services'
 import Process from '@/components/Process'
+import BrandShowcase from '@/components/BrandShowcase'
 
 export default function HomePage() {
   return (
@@ -13,6 +14,7 @@ export default function HomePage() {
       <Hero />
       <Services />
       <Portfolio />
+      <BrandShowcase />
       <Process />
       <InquiryForm />
       <Footer />

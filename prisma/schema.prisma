@@ -204,6 +204,18 @@ model JobService {
   @@index([serviceType])
 }
 
+model Brand {
+  id          String   @id @default(cuid())
+  name        String
+  logoUrl     String
+  websiteUrl  String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([order])
+}
+
 model InvoiceItem {
   id          String    @id @default(cuid())
   invoiceId   String

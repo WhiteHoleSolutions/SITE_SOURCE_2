@@ -31,10 +31,11 @@ export async function GET(
       where: { url },
       include: { album: true },
     })
+    const brand = await prisma.brand.findFirst({ where: { logoUrl: url }, select: { id: true } })
 
     // Public portfolio media remains public. Everything else on the uploads
     // disk is restricted, including private client-gallery media and receipts.
-    if (!media || media.album.type !== 'PUBLIC') {
+    if (!brand && (!media || media.album.type !== 'PUBLIC')) {
       const session = await getSession()
       if (!session) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -90,7 +91,7 @@ export async function GET(
     return new NextResponse(fileBuffer, {
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': media?.album.type === 'PUBLIC'
+        'Cache-Control': brand || media?.album.type === 'PUBLIC'
           ? 'public, max-age=31536000, immutable'
           : 'private, no-store',
       },

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
-import { LogOut, Image, Users, MessageSquare, FileText, Settings, Receipt, DollarSign, BarChart3, Briefcase } from 'lucide-react'
+import { LogOut, Image, Users, MessageSquare, FileText, Settings, Receipt, DollarSign, BarChart3, Briefcase, Star } from 'lucide-react'
 import AlbumsTab from '@/components/admin/AlbumsTab'
 import CustomersTab from '@/components/admin/CustomersTab'
 import InquiriesTab from '@/components/admin/InquiriesTab'
@@ -13,8 +13,9 @@ import BillsOfSaleTab from '@/components/admin/BillsOfSaleTab'
 import ExpensesTab from '@/components/admin/ExpensesTab'
 import AnalyticsTab from '@/components/admin/AnalyticsTab'
 import JobsTab from '@/components/admin/JobsTab'
+import BrandsTab from '@/components/admin/BrandsTab'
 
-type Tab = 'jobs' | 'albums' | 'customers' | 'inquiries' | 'invoices' | 'bills' | 'expenses' | 'analytics' | 'settings'
+type Tab = 'jobs' | 'brands' | 'albums' | 'customers' | 'inquiries' | 'invoices' | 'bills' | 'expenses' | 'analytics' | 'settings'
 
 export default function AdminPage() {
   const router = useRouter()
@@ -59,6 +60,7 @@ export default function AdminPage() {
 
   const tabs = [
     { id: 'jobs' as Tab, label: 'Jobs', icon: Briefcase },
+    { id: 'brands' as Tab, label: 'Brands', icon: Star },
     { id: 'albums' as Tab, label: 'Albums', icon: Image },
     { id: 'customers' as Tab, label: 'Customers', icon: Users },
     { id: 'inquiries' as Tab, label: 'Inquiries', icon: MessageSquare },
@@ -113,6 +115,7 @@ export default function AdminPage() {
 
           <div className="p-4 sm:p-7">
             {activeTab === 'jobs' && <JobsTab />}
+            {activeTab === 'brands' && <BrandsTab />}
             {activeTab === 'albums' && <AlbumsTab />}
             {activeTab === 'customers' && <CustomersTab />}
             {activeTab === 'inquiries' && <InquiriesTab />}

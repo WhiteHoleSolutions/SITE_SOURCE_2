@@ -75,3 +75,10 @@ export const jobUpdateSchema = z.object({
   })).optional(),
   status: z.enum(['LEAD', 'SCOPED', 'QUOTE_SENT', 'CONFIRMED', 'SCHEDULED', 'IN_PRODUCTION', 'CLIENT_REVIEW', 'READY_TO_DELIVER', 'COMPLETE', 'ARCHIVED']).optional(),
 })
+
+export const brandSchema = z.object({
+  name: z.string().trim().min(2, 'Brand name is required').max(100),
+  logoUrl: z.string().min(1, 'A logo is required'),
+  websiteUrl: z.string().url('Enter a valid website URL').optional().or(z.literal('')),
+  order: z.number().int().min(0).optional(),
+})
