@@ -11,14 +11,14 @@ export default function Process() {
       <div className="absolute inset-0 studio-grid opacity-40" />
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
         <div className="flex max-w-3xl flex-col gap-4">
-          <p className="editorial-kicker text-[#c6ff43]">A clearer creative process</p>
+          <p className="editorial-kicker text-[#65a7ff]">A clearer creative process</p>
           <h2 className="text-balance text-4xl font-semibold tracking-[-.045em] sm:text-6xl">Good work should feel organised from day one.</h2>
           <p className="text-lg leading-8 text-white/65">Whether the job is a single product image or a complete campaign, you always know what happens next.</p>
         </div>
         <ol className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-white/15 bg-white/15 md:grid-cols-2 lg:grid-cols-4">
           {steps.map(([number, title, description]) => (
             <li key={number} className="bg-[#151715] p-7 sm:p-8">
-              <span className="text-sm font-bold tracking-widest text-[#c6ff43]">{number}</span>
+              <span className="text-sm font-bold tracking-widest text-[#65a7ff]">{number}</span>
               <h3 className="mt-12 text-xl font-semibold tracking-[-.025em]">{title}</h3>
               <p className="mt-3 leading-7 text-white/60">{description}</p>
             </li>

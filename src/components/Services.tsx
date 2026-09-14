@@ -28,7 +28,7 @@ export default function Services() {
     <section id="services" className="bg-[#f4f1eb] py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
         <div className="max-w-3xl">
-          <p className="editorial-kicker text-[#6f9e11]">What we make</p>
+          <p className="editorial-kicker text-[#216ac4]">What we make</p>
           <h2 className="mt-4 text-balance text-4xl font-semibold tracking-[-.045em] text-[#111211] sm:text-6xl">
             One creative partner, from first brief to finished asset.
           </h2>
@@ -40,7 +40,7 @@ export default function Services() {
         <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-black/10 bg-black/10 sm:grid-cols-2 lg:grid-cols-4">
           {services.map(({ icon: Icon, title, description }) => (
             <article key={title} className="group bg-[#f8f6f1] p-7 transition hover:bg-white sm:p-8">
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#111211] text-[#c6ff43] transition group-hover:scale-110">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#111211] text-[#65a7ff] transition group-hover:scale-110">
                 <Icon size={22} aria-hidden="true" />
               </div>
               <h3 className="mt-12 text-xl font-semibold tracking-[-.025em] text-[#111211]">{title}</h3>

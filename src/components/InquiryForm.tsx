@@ -47,7 +47,7 @@ export default function InquiryForm() {
   }
 
   return (
-    <section id="contact" className="bg-[#c6ff43] py-24 sm:py-32">
+    <section id="contact" className="bg-[#dbeafe] py-24 sm:py-32">
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -55,11 +55,11 @@ export default function InquiryForm() {
           viewport={{ once: true }}
           className="text-center mb-8 sm:mb-12 md:mb-16"
         >
-          <p className="editorial-kicker mb-4 text-[#4c7405]">Start a project</p>
+          <p className="editorial-kicker mb-4 text-[#216ac4]">Start a project</p>
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-[-.05em] text-[#111211] mb-4">
             Get in Touch
           </h2>
-          <p className="text-base sm:text-lg text-[#253308] max-w-2xl mx-auto px-4">
+          <p className="text-base sm:text-lg text-[#183b67] max-w-2xl mx-auto px-4">
             Tell us what you are trying to make. We’ll shape the right production plan with you.
           </p>
         </motion.div>

@@ -42,7 +42,7 @@ export default function Portfolio() {
           viewport={{ once: true }}
           className="text-center mb-8 sm:mb-12 md:mb-16"
         >
-          <p className="editorial-kicker mb-4 text-[#c6ff43]">Selected work</p>
+          <p className="editorial-kicker mb-4 text-[#65a7ff]">Selected work</p>
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-[-.045em] text-white mb-4">
             Our Portfolio
           </h2>

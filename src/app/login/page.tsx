@@ -76,7 +76,7 @@ export default function LoginPage() {
               {businessName}
             </span>
           </Link>
-          <p className="editorial-kicker mt-6 text-center text-[#6f9e11]">Client portal</p>
+          <p className="editorial-kicker mt-6 text-center text-[#216ac4]">Client portal</p>
           <h2 className="mt-3 text-center text-3xl sm:text-4xl font-semibold tracking-[-.05em] text-[#111211]">
             Welcome back
           </h2>
@@ -95,7 +95,7 @@ export default function LoginPage() {
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="mt-1 block w-full bg-white px-4 py-3 border border-dark-300 rounded-lg focus:ring-2 focus:ring-[#9fd32e] focus:border-transparent transition text-base text-dark-900 placeholder-gray-400"
+                className="mt-1 block w-full bg-white px-4 py-3 border border-dark-300 rounded-lg focus:ring-2 focus:ring-[#65a7ff] focus:border-transparent transition text-base text-dark-900 placeholder-gray-400"
                 placeholder="you@example.com"
               />
             </div>
@@ -111,7 +111,7 @@ export default function LoginPage() {
                 required
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="mt-1 block w-full bg-white px-4 py-3 border border-dark-300 rounded-lg focus:ring-2 focus:ring-[#9fd32e] focus:border-transparent transition text-base text-dark-900 placeholder-gray-400"
+                className="mt-1 block w-full bg-white px-4 py-3 border border-dark-300 rounded-lg focus:ring-2 focus:ring-[#65a7ff] focus:border-transparent transition text-base text-dark-900 placeholder-gray-400"
                 placeholder="••••••••"
               />
             </div>
@@ -120,13 +120,13 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-lg shadow-sm text-sm sm:text-base font-semibold text-[#111211] bg-[#c6ff43] hover:bg-[#d5ff77] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#9fd32e] transition disabled:opacity-50 disabled:cursor-not-allowed active:scale-98"
+            className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-lg shadow-sm text-sm sm:text-base font-semibold text-white bg-[#2563eb] hover:bg-[#3b82f6] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#65a7ff] transition disabled:opacity-50 disabled:cursor-not-allowed active:scale-98"
           >
             {isLoading ? 'Signing in...' : 'Sign in'}
           </button>
 
           <div className="text-center">
-            <Link href="/" className="text-sm text-[#4c7405] hover:text-[#111211] inline-flex items-center gap-1">
+            <Link href="/" className="text-sm text-[#216ac4] hover:text-[#111211] inline-flex items-center gap-1">
               ← Back to home
             </Link>
           </div>

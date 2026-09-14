@@ -60,7 +60,7 @@ export default function Navbar() {
             </Link>
             <Link 
               href="/login" 
-              className="bg-[#c6ff43] hover:bg-[#d5ff77] text-[#111211] px-5 py-2.5 rounded-full text-sm font-semibold transition"
+              className="bg-[#2563eb] hover:bg-[#3b82f6] text-white px-5 py-2.5 rounded-full text-sm font-semibold transition"
             >
               Client portal
             </Link>

@@ -70,16 +70,16 @@ export default function AdminPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-dark-50">
+    <div className="admin-workspace">
       {/* Header */}
-      <header className="bg-white shadow sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex justify-between items-center">
-          <h1 className="text-lg sm:text-2xl font-bold text-primary-600">Admin Panel</h1>
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#111211]/95 text-white backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 py-4 sm:py-5 flex justify-between items-center">
+          <div><p className="editorial-kicker text-[#65a7ff]">White Hole Solutions</p><h1 className="mt-1 text-lg sm:text-xl font-semibold tracking-[-.03em]">Operations studio</h1></div>
           <div className="flex items-center gap-2 sm:gap-4">
-            <span className="hidden sm:inline text-dark-600">Welcome, {user?.name}</span>
+            <span className="hidden sm:inline text-white/65">Welcome, {user?.name}</span>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1 sm:gap-2 text-dark-600 hover:text-dark-900 px-2 py-1 sm:px-3 sm:py-2 rounded-lg hover:bg-dark-100 transition"
+              className="flex items-center gap-1 sm:gap-2 text-white/70 hover:text-white px-2 py-1 sm:px-3 sm:py-2 rounded-lg hover:bg-white/10 transition"
             >
               <LogOut size={18} className="sm:w-5 sm:h-5" />
               <span className="text-sm sm:text-base">Logout</span>
@@ -88,10 +88,10 @@ export default function AdminPage() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-8 lg:px-10 py-6 sm:py-10">
         {/* Tabs - Horizontal scroll on mobile */}
-        <div className="bg-white rounded-lg shadow mb-6">
-          <nav className="flex border-b overflow-x-auto scrollbar-hide">
+        <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(20,24,16,.07)] mb-6 overflow-hidden">
+          <nav className="flex border-b border-black/10 overflow-x-auto scrollbar-hide bg-[#f8f6f1]">
             {tabs.map((tab) => {
               const Icon = tab.icon
               return (
@@ -100,8 +100,8 @@ export default function AdminPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 font-medium border-b-2 transition whitespace-nowrap text-sm sm:text-base min-w-fit ${
                     activeTab === tab.id
-                      ? 'border-primary-500 text-primary-600'
-                      : 'border-transparent text-dark-600 hover:text-dark-900 hover:bg-dark-50'
+                      ? 'border-[#2563eb] text-[#216ac4] bg-white'
+                      : 'border-transparent text-dark-600 hover:text-dark-900 hover:bg-white/70'
                   }`}
                 >
                   <Icon size={18} className="sm:w-5 sm:h-5" />
@@ -111,7 +111,7 @@ export default function AdminPage() {
             })}
           </nav>
 
-          <div className="p-3 sm:p-6">
+          <div className="p-4 sm:p-7">
             {activeTab === 'jobs' && <JobsTab />}
             {activeTab === 'albums' && <AlbumsTab />}
             {activeTab === 'customers' && <CustomersTab />}

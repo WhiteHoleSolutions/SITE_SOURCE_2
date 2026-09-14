@@ -7,8 +7,8 @@
   --ink-muted: #62665f;
   --paper: #f4f1eb;
   --paper-deep: #e8e4dc;
-  --signal: #c6ff43;
-  --signal-deep: #7fbb16;
+  --signal: #65a7ff;
+  --signal-deep: #216ac4;
 }
 
 body {
@@ -93,4 +93,14 @@ body {
   border: 1px solid rgba(17, 18, 17, .09);
   border-radius: 1rem;
   box-shadow: 0 10px 35px rgba(20, 24, 16, .06);
+}
+
+.admin-workspace {
+  min-height: 100vh;
+  background: radial-gradient(circle at 94% -8%, rgba(101, 167, 255, .24), transparent 28rem), #f4f1eb;
+}
+
+.admin-workspace .bg-white {
+  border: 1px solid rgba(17, 18, 17, .09);
+  box-shadow: 0 10px 35px rgba(20, 24, 16, .055);
 }

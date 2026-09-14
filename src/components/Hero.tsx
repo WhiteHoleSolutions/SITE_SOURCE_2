@@ -158,7 +158,7 @@ export default function Hero() {
           transition={{ duration: 0.8 }}
           className="max-w-5xl text-left"
         >
-          <p className="editorial-kicker mb-5 text-[#c6ff43]">Creative production · Digital systems</p>
+          <p className="editorial-kicker mb-5 text-[#65a7ff]">Creative production · Digital systems</p>
           <h1 className="max-w-4xl text-balance text-5xl font-semibold leading-[.92] tracking-[-.06em] text-white sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl mb-6">
             {businessName}
           </h1>
@@ -173,7 +173,7 @@ export default function Hero() {
           >
             <a
               href="#portfolio"
-              className="bg-[#c6ff43] hover:bg-[#d5ff77] active:scale-95 text-[#111211] px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition transform hover:scale-105"
+              className="bg-[#2563eb] hover:bg-[#3b82f6] active:scale-95 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition transform hover:scale-105"
             >
               Explore our work
             </a>
