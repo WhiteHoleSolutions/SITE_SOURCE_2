@@ -3,13 +3,8 @@ import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { jobSchema } from '@/lib/validators'
 import { generateJobNumber } from '@/lib/utils'
-
-const jobInclude = {
-  customer: { include: { user: { select: { name: true, email: true } } } },
-  inquiry: { select: { id: true, name: true, email: true, status: true } },
-  services: { orderBy: { createdAt: 'asc' as const } },
-  _count: { select: { invoices: true } },
-}
+import { jobWorkspaceInclude } from '@/lib/job-query'
+import { DEFAULT_JOB_TASKS } from '@/lib/job-workflow'
 
 export async function GET() {
   try {
@@ -19,7 +14,7 @@ export async function GET() {
     }
 
     const jobs = await prisma.job.findMany({
-      include: jobInclude,
+      include: jobWorkspaceInclude,
       orderBy: [{ dueDate: 'asc' }, { createdAt: 'desc' }],
     })
 
@@ -51,8 +46,9 @@ export async function POST(request: NextRequest) {
         dueDate: data.dueDate ? new Date(data.dueDate) : null,
         quotedAmount: data.quotedAmount,
         services: { create: data.services },
+        tasks: { create: DEFAULT_JOB_TASKS },
       },
-      include: jobInclude,
+      include: jobWorkspaceInclude,
     })
 
     if (data.inquiryId) {

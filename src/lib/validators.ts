@@ -59,6 +59,8 @@ export const jobSchema = z.object({
 })
 
 export const jobUpdateSchema = z.object({
+  nextAction: z.string().trim().max(500).nullable().optional(),
+  nextActionDue: z.string().nullable().optional(),
   title: z.string().trim().min(2).max(120).optional(),
   customerId: z.string().nullable().optional(),
   inquiryId: z.string().nullable().optional(),
@@ -72,6 +74,7 @@ export const jobUpdateSchema = z.object({
   services: z.array(z.object({
     serviceType: z.enum(['PHOTO_VIDEO', 'DRONE', 'PRODUCT_IMAGERY', 'PRINT', 'WEBSITE', 'SOFTWARE']),
     scope: z.string().trim().max(1000).optional().nullable(),
+    status: z.enum(['PLANNED', 'IN_PROGRESS', 'COMPLETE']).default('PLANNED'),
   })).optional(),
   status: z.enum(['LEAD', 'SCOPED', 'QUOTE_SENT', 'CONFIRMED', 'SCHEDULED', 'IN_PRODUCTION', 'CLIENT_REVIEW', 'READY_TO_DELIVER', 'COMPLETE', 'ARCHIVED']).optional(),
 })

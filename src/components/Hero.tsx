@@ -1,206 +1,59 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { useCallback, useEffect, useState } from 'react'
+import { useReducedMotion } from 'framer-motion'
 import Image from 'next/image'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowDown, ArrowUpRight, Pause, Play, Shuffle } from 'lucide-react'
 
-interface HeroMedia {
-  url: string
-  type: 'IMAGE' | 'VIDEO'
-}
+interface HeroMedia { url: string; type: 'IMAGE' | 'VIDEO'; album: string }
 
 export default function Hero() {
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const [heroMedia, setHeroMedia] = useState<HeroMedia[]>([])
-  const [loadedMedia, setLoadedMedia] = useState<Set<string>>(new Set())
-  const [businessName, setBusinessName] = useState('White Hole Solutions')
+  const [media, setMedia] = useState<HeroMedia[]>([])
+  const [slide, setSlide] = useState({ current: 0, previous: -1 })
+  const [loaded, setLoaded] = useState<Set<string>>(new Set())
+  const [paused, setPaused] = useState(false)
+  const reducedMotion = useReducedMotion()
 
   useEffect(() => {
-    // Fetch business info
-    fetch('/api/business-info/public')
-      .then(res => res.json())
-      .then(data => {
-        if (data.businessInfo?.businessName) {
-          setBusinessName(data.businessInfo.businessName)
-        }
-      })
-      .catch(console.error)
-
-    // The public endpoint returns PUBLIC albums only. Include every item in
-    // those albums so the hero becomes a complete public-work reel.
-    fetch('/api/albums/public')
-      .then(res => res.json())
-      .then(data => {
-        const media: HeroMedia[] = []
-        data.albums?.forEach((album: any) => {
-          album.media?.forEach((m: any) => {
-            media.push({ url: m.url, type: m.type })
-          })
-        })
-        setHeroMedia(media)
-      })
-      .catch(console.error)
+    let cancelled = false
+    fetch('/api/albums/public').then(response => response.json()).then(data => {
+      if (cancelled) return
+      const assets: HeroMedia[] = (data.albums || []).flatMap((album: { title: string; media?: { url: string; type: 'IMAGE' | 'VIDEO' }[] }) => (album.media || []).map(item => ({ ...item, album: album.title })))
+      setMedia(assets)
+      setSlide({ current: Math.floor(Math.random() * Math.max(1, assets.length)), previous: -1 })
+    }).catch(() => { /* Keep the designed background if media is unavailable. */ })
+    return () => { cancelled = true }
   }, [])
 
+  const shuffle = useCallback(() => {
+    if (media.length < 2) return
+    setSlide(old => ({ previous: old.current, current: (old.current + 1 + Math.floor(Math.random() * (media.length - 1))) % media.length }))
+  }, [media.length])
   useEffect(() => {
-    if (heroMedia.length === 0) return
-    
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => {
-        if (heroMedia.length === 1) return 0
-
-        let nextIndex
-        do {
-          nextIndex = Math.floor(Math.random() * heroMedia.length)
-        } while (nextIndex === prev)
-        return nextIndex
-      })
-    }, 5000)
-
+    if (paused || reducedMotion || media.length < 2) return
+    const timer = setInterval(shuffle, 7000)
     return () => clearInterval(timer)
-  }, [heroMedia.length])
+  }, [shuffle, paused, reducedMotion, media.length])
+  const ready = (url: string) => setLoaded(current => new Set(current).add(url))
+  const currentReady = media[slide.current] && loaded.has(media[slide.current].url)
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => {
-      if (heroMedia.length === 1) return 0
-      
-      let nextIndex
-      do {
-        nextIndex = Math.floor(Math.random() * heroMedia.length)
-      } while (nextIndex === prev)
-      return nextIndex
-    })
-  }
-
-  const markMediaLoaded = (url: string) => {
-    setLoadedMedia(current => current.has(url) ? current : new Set(current).add(url))
-  }
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => {
-      if (heroMedia.length === 1) return 0
-      
-      let nextIndex
-      do {
-        nextIndex = Math.floor(Math.random() * heroMedia.length)
-      } while (nextIndex === prev)
-      return nextIndex
-    })
-  }
-
-  return (
-    <section className="relative min-h-[760px] h-screen w-full overflow-hidden bg-[#111211]">
-      {/* Background Media Slider */}
-      {heroMedia.length > 0 ? (
-        <div className="absolute inset-0">
-          {heroMedia.map((media, index) => (
-            <div
-              key={`${media.url}-${index}`}
-              className={`absolute inset-0 transition-opacity duration-1000 ${
-                index === currentSlide && loadedMedia.has(media.url) ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
-              {media.type === 'IMAGE' ? (
-                <Image
-                  src={media.url}
-                  alt="Hero background"
-                  fill
-                  className="object-cover protected-image"
-                  priority={index === 0}
-                  onLoadingComplete={() => markMediaLoaded(media.url)}
-                />
-              ) : (
-                <video
-                  key={`video-${media.url}`}
-                  src={media.url}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  className="w-full h-full object-cover"
-                  onCanPlay={() => markMediaLoaded(media.url)}
-                />
-              )}
-            </div>
-          ))}
-
-          {/* Navigation Arrows */}
-          {heroMedia.length > 1 && (
-            <>
-              <button
-                onClick={prevSlide}
-                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 active:scale-95 backdrop-blur-sm p-2 sm:p-3 rounded-full transition z-10"
-                aria-label="Previous slide"
-              >
-                <ChevronLeft className="text-white" size={20} />
-              </button>
-              <button
-                onClick={nextSlide}
-                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 active:scale-95 backdrop-blur-sm p-2 sm:p-3 rounded-full transition z-10"
-                aria-label="Next slide"
-              >
-                <ChevronRight className="text-white" size={20} />
-              </button>
-            </>
-          )}
-        </div>
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-600 to-primary-900" />
-      )}
-
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-black/10" />
-      <div className="absolute inset-0 studio-grid opacity-30" />
-
-      {/* Content */}
-      <div className="relative z-10 mx-auto flex h-full max-w-7xl items-end px-5 pb-24 pt-32 sm:px-8 sm:pb-28 lg:px-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-5xl text-left"
-        >
-          <p className="editorial-kicker mb-5 text-[#65a7ff]">Creative production · Digital systems</p>
-          <h1 className="max-w-4xl text-balance text-5xl font-semibold leading-[.92] tracking-[-.06em] text-white sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl mb-6">
-            {businessName}
-          </h1>
-          <p className="max-w-2xl text-lg leading-7 text-white/80 sm:text-xl sm:leading-8 md:text-2xl mb-8 sm:mb-10">
-            From first idea to finished media, promotion and digital tools.
-          </p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-3 sm:gap-4"
-          >
-            <a
-              href="#portfolio"
-              className="bg-[#2563eb] hover:bg-[#3b82f6] active:scale-95 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition transform hover:scale-105"
-            >
-              Explore our work
-            </a>
-            <a
-              href="#contact"
-              className="bg-white/10 backdrop-blur-sm hover:bg-white/20 active:scale-95 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition border border-white/50"
-            >
-              Start a project
-            </a>
-          </motion.div>
-        </motion.div>
+  return <section className="relative isolate overflow-hidden bg-[#0b1423] text-white">
+    <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+      <div className="hero-orbit" />
+      {media.map((item, index) => index === slide.current || index === slide.previous ? <div key={`${item.url}-${index}`} className={`absolute inset-0 transition-opacity duration-1000 motion-reduce:transition-none ${index === slide.current ? (currentReady ? 'opacity-100' : 'opacity-0') : (currentReady ? 'opacity-0' : 'opacity-100')}`}>
+        {item.type === 'IMAGE' ? <Image src={item.url} alt="" fill sizes="100vw" priority={index === slide.current} className="object-cover" onLoad={() => ready(item.url)} /> : <video src={item.url} muted loop playsInline autoPlay={!paused && !reducedMotion} ref={element => { if (element) { if (paused || reducedMotion) element.pause(); else void element.play().catch(() => {}) } }} preload="metadata" onLoadedData={() => ready(item.url)} className="h-full w-full object-cover" />}
+      </div> : null)}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#07101e]/95 via-[#07101e]/70 to-[#07101e]/20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#07101e] via-transparent to-[#07101e]/30" />
+    </div>
+    <div className="relative mx-auto max-w-7xl px-5 pb-10 pt-40 sm:px-8 sm:pt-48 lg:px-10 lg:pt-52">
+      <div className="flex items-center gap-3"><span className="h-px w-10 bg-blue-400" /><p className="editorial-kicker text-blue-200">Independent creative & digital studio</p></div>
+      <h1 className="mt-8 max-w-4xl text-[clamp(3.4rem,8.4vw,7.6rem)] font-medium leading-[.96] tracking-[-.065em]">Make an<br />impression.<br /><span className="font-serif italic font-normal text-blue-300">Make it yours.</span></h1>
+      <div className="mt-9 flex flex-col justify-between gap-10 lg:flex-row lg:items-end">
+        <div className="max-w-lg"><p className="text-base leading-7 text-slate-200 sm:text-lg sm:leading-8">Photography, film, print and digital experiences.<br className="hidden sm:block" /> Made for your business. Made for your next idea.</p><div className="mt-7 flex flex-wrap gap-3"><a href="#contact" className="inline-flex items-center gap-8 rounded-full bg-blue-600 px-6 py-4 text-sm font-semibold text-white transition hover:bg-blue-500">Let’s make something <ArrowUpRight size={18} /></a><a href="#portfolio" className="inline-flex items-center gap-3 rounded-full border border-white/30 px-6 py-4 text-sm font-medium transition hover:bg-white/10">Explore the work <ArrowDown size={16} /></a></div></div>
+        <div className="max-w-xs border-l border-white/25 pl-5"><p className="editorial-kicker text-blue-300">From pixels to physical</p><p className="mt-3 text-sm leading-6 text-white/65">A single product. A personal project. A complete brand presence. One studio to bring it together.</p></div>
       </div>
-
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 right-5 z-10 sm:right-8 lg:right-10">
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="w-6 h-10 border border-white/70 rounded-full flex items-start justify-center p-2"
-        >
-          <motion.div className="w-1 h-2 bg-white rounded-full" />
-        </motion.div>
-      </div>
-    </section>
-  )
+      <div className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-white/20 pt-5 sm:mt-20"><p className="text-xs tracking-wide text-slate-400">PHOTO / FILM / PRINT / WEB / SOFTWARE</p>{media.length > 0 && <div className="flex items-center gap-3"><p className="max-w-[160px] truncate text-xs text-slate-300">{media[slide.current]?.album}</p><button aria-label={paused ? 'Play portfolio reel' : 'Pause portfolio reel'} aria-pressed={paused} onClick={() => setPaused(!paused)} className="rounded-full border border-white/25 p-2.5 hover:bg-white/10">{paused ? <Play size={14} /> : <Pause size={14} />}</button>{media.length > 1 && <button aria-label="Show another public work" onClick={shuffle} className="rounded-full border border-white/25 p-2.5 hover:bg-white/10"><Shuffle size={14} /></button>}</div>}</div>
+    </div>
+  </section>
 }

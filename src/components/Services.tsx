@@ -1,54 +1,15 @@
-import { Camera, Clapperboard, LayoutPanelTop, PackageCheck } from 'lucide-react'
+import { ArrowUpRight, Camera, ScanLine, Layers, Code2 } from 'lucide-react'
 
 const services = [
-  {
-    icon: Camera,
-    title: 'Photo & aerial video',
-    description: 'Campaign imagery, drone footage and polished video built around the way your business needs to be seen.',
-  },
-  {
-    icon: PackageCheck,
-    title: 'Product imaging',
-    description: 'Consistent, catalogue-ready images for individual stock items, online stores and sales campaigns.',
-  },
-  {
-    icon: Clapperboard,
-    title: 'Print & promotional material',
-    description: 'Cards, signage, uniforms and practical campaign assets that carry your brand into the real world.',
-  },
-  {
-    icon: LayoutPanelTop,
-    title: 'Websites & custom software',
-    description: 'Front-end experiences and back-end tools shaped around your actual workflow—not a generic template.',
-  },
+  { icon: Camera, title: 'A different perspective.', name: 'Photography & film', description: 'Ground-level detail. Aerial perspective. Still and moving images shaped around the story you want to tell.', tags: ['Photography', 'Video production', 'Drone media'] },
+  { icon: ScanLine, title: 'Every detail, considered.', name: 'Product imagery', description: 'Give each stock item its moment, with clear, consistent imagery for catalogues, online stores and campaigns.', tags: ['Individual products', 'E-commerce', 'Catalogue images'] },
+  { icon: Layers, title: 'Beyond the screen.', name: 'Print & promotion', description: 'Turn your identity into something people can see, wear and hold. Practical promotional pieces that belong together.', tags: ['Business cards', 'Uniforms', 'Signs & displays'] },
+  { icon: Code2, title: 'Built around you.', name: 'Websites & software', description: 'From your first impression online to the tools behind the scenes. Custom front ends, back ends and purpose-built software.', tags: ['Websites', 'Business tools', 'Custom development'] },
 ]
 
 export default function Services() {
-  return (
-    <section id="services" className="bg-[#f4f1eb] py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-        <div className="max-w-3xl">
-          <p className="editorial-kicker text-[#216ac4]">What we make</p>
-          <h2 className="mt-4 text-balance text-4xl font-semibold tracking-[-.045em] text-[#111211] sm:text-6xl">
-            One creative partner, from first brief to finished asset.
-          </h2>
-          <p className="mt-6 text-lg leading-8 text-[#62665f]">
-            White Hole Solutions combines digital production, physical promotional material and practical software so your work stays connected.
-          </p>
-        </div>
-
-        <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-black/10 bg-black/10 sm:grid-cols-2 lg:grid-cols-4">
-          {services.map(({ icon: Icon, title, description }) => (
-            <article key={title} className="group bg-[#f8f6f1] p-7 transition hover:bg-white sm:p-8">
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#111211] text-[#65a7ff] transition group-hover:scale-110">
-                <Icon size={22} aria-hidden="true" />
-              </div>
-              <h3 className="mt-12 text-xl font-semibold tracking-[-.025em] text-[#111211]">{title}</h3>
-              <p className="mt-3 leading-7 text-[#62665f]">{description}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
+  return <section id="services" className="bg-[#f5f4f0] py-24 sm:py-32"><div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+    <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]"><div><p className="editorial-kicker text-blue-700">01 / The capabilities</p><h2 className="mt-5 max-w-2xl text-4xl font-medium leading-[1.05] tracking-[-.05em] text-slate-950 sm:text-6xl">Different mediums.<br /><span className="font-serif italic text-slate-500">One clear vision.</span></h2></div><p className="max-w-md self-end text-lg leading-8 text-slate-600">You shouldn’t have to piece your project together across disconnected suppliers. White Hole Solutions connects creative production with the practical tools to put it to work.</p></div>
+    <div className="mt-14 grid gap-4 md:grid-cols-2">{services.map(({ icon: Icon, title, name, description, tags }, index) => <a key={name} href="#contact" className="group relative rounded-2xl border border-slate-200 bg-white p-7 transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl hover:shadow-slate-900/5 sm:p-9"><div className="flex items-center justify-between"><span className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><Icon size={23} /></span><span className="text-xs tabular-nums text-slate-400">0{index + 1}</span></div><p className="mt-8 text-xs font-semibold uppercase tracking-widest text-blue-700">{name}</p><h3 className="mt-3 text-3xl font-medium tracking-[-.04em] text-slate-950">{title}</h3><p className="mt-4 max-w-lg text-sm leading-7 text-slate-600">{description}</p><div className="mt-7 flex flex-wrap items-center gap-2 pr-8">{tags.map(tag => <span key={tag} className="rounded-full border border-slate-200 px-3 py-1 text-[11px] text-slate-500">{tag}</span>)}</div><ArrowUpRight aria-hidden="true" className="absolute bottom-9 right-7 text-slate-400 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-blue-600" size={20} /></a>)}</div>
+  </div></section>
 }

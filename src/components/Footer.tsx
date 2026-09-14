@@ -7,8 +7,8 @@ export default function Footer() {
   const currentYear = new Date().getFullYear()
   const [businessInfo, setBusinessInfo] = useState({
     businessName: 'White Hole Solutions',
-    email: 'info@whiteholesolutions.com',
-    phone: '+1 (555) 123-4567',
+    email: '',
+    phone: '',
   })
 
   useEffect(() => {
@@ -18,8 +18,8 @@ export default function Footer() {
         if (data.businessInfo) {
           setBusinessInfo({
             businessName: data.businessInfo.businessName || 'White Hole Solutions',
-            email: data.businessInfo.email || 'info@whiteholesolutions.com',
-            phone: data.businessInfo.phone || '+1 (555) 123-4567',
+            email: data.businessInfo.email || '',
+            phone: data.businessInfo.phone || '',
           })
         }
       })
@@ -27,7 +27,7 @@ export default function Footer() {
   }, [])
 
   return (
-    <footer className="bg-[#111211] text-white py-16">
+    <footer className="bg-[#07101e] text-white py-16">
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
@@ -61,8 +61,9 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4">Contact Info</h4>
             <ul className="space-y-2 text-dark-300">
-              <li>Email: {businessInfo.email}</li>
-              <li>Phone: {businessInfo.phone}</li>
+              {businessInfo.email && <li><a className="hover:text-blue-300" href={`mailto:${businessInfo.email}`}>{businessInfo.email}</a></li>}
+              {businessInfo.phone && <li><a className="hover:text-blue-300" href={`tel:${businessInfo.phone}`}>{businessInfo.phone}</a></li>}
+              {!businessInfo.email && !businessInfo.phone && <li><Link href="/#contact" className="hover:text-blue-300">Send a project inquiry →</Link></li>}
             </ul>
           </div>
         </div>

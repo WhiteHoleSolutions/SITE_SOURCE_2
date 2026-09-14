@@ -35,7 +35,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
         <div className="flex justify-between h-20 items-center">
           <Link href="/" className="flex items-center">
-            <span className={`text-2xl font-bold transition-colors ${
+            <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
               scrolled ? 'text-[#111211]' : 'text-white'
             }`}>
               {businessName}
@@ -68,7 +68,10 @@ export default function Navbar() {
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden"
+            className="md:hidden rounded-lg p-2"
+            aria-label={isOpen ? 'Close navigation' : 'Open navigation'}
+            aria-expanded={isOpen}
+            aria-controls="mobile-navigation"
           >
             {isOpen ? (
               <X className={scrolled ? 'text-dark-900' : 'text-white'} />
@@ -80,7 +83,7 @@ export default function Navbar() {
       </div>
 
       {isOpen && (
-        <div className="md:hidden bg-[#f4f1eb] shadow-lg">
+        <div id="mobile-navigation" onClick={() => setIsOpen(false)} className="md:hidden bg-[#f4f1eb] shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1">
             <Link href="/#services" className="block px-3 py-2 text-dark-900 hover:bg-primary-50">
               Services

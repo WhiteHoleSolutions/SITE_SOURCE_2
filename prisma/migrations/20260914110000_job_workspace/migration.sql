@@ -1,0 +1,19 @@
+ALTER TABLE "Job" ADD COLUMN "nextAction" TEXT;
+ALTER TABLE "Job" ADD COLUMN "nextActionDue" DATETIME;
+CREATE TABLE "JobTask" (
+  "id" TEXT NOT NULL PRIMARY KEY,
+  "jobId" TEXT NOT NULL,
+  "title" TEXT NOT NULL,
+  "stage" TEXT NOT NULL,
+  "completed" BOOLEAN NOT NULL DEFAULT false,
+  "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "JobTask_jobId_fkey" FOREIGN KEY ("jobId") REFERENCES "Job" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE INDEX "JobTask_jobId_idx" ON "JobTask"("jobId");
+CREATE TABLE "JobAlbum" (
+  "jobId" TEXT NOT NULL,
+  "albumId" TEXT NOT NULL,
+  PRIMARY KEY ("jobId", "albumId"),
+  CONSTRAINT "JobAlbum_jobId_fkey" FOREIGN KEY ("jobId") REFERENCES "Job" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT "JobAlbum_albumId_fkey" FOREIGN KEY ("albumId") REFERENCES "Album" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);

@@ -9,7 +9,7 @@ import BrandShowcase from '@/components/BrandShowcase'
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen">
+    <main className="homepage min-h-screen">
       <Navbar />
       <Hero />
       <Services />

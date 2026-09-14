@@ -1,30 +1,12 @@
+import { ArrowUpRight } from 'lucide-react'
+
 const steps = [
-  ['01', 'Tell us the outcome', 'Share your goal, deadline and the assets you need.'],
-  ['02', 'Plan the right production', 'We scope the work, organise the equipment and agree on deliverables.'],
-  ['03', 'Create, review, refine', 'You receive a clear proofing and feedback process—not a black box.'],
-  ['04', 'Receive ready-to-use assets', 'Approved work is delivered in the formats your channels actually need.'],
+  ['01', 'The conversation', 'Tell us what you have in mind, who it’s for and when you need it. We’ll work out what the project needs.'],
+  ['02', 'The plan', 'Agree on the scope, deliverables and production details. A clear direction before the making begins.'],
+  ['03', 'The making', 'Capture, design or build. Review the work together, share feedback and refine the details.'],
+  ['04', 'The handover', 'Receive the finished work in the agreed formats, ready for its next chapter.'],
 ]
 
 export default function Process() {
-  return (
-    <section id="process" className="relative overflow-hidden bg-[#111211] py-24 text-white sm:py-32">
-      <div className="absolute inset-0 studio-grid opacity-40" />
-      <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-        <div className="flex max-w-3xl flex-col gap-4">
-          <p className="editorial-kicker text-[#65a7ff]">A clearer creative process</p>
-          <h2 className="text-balance text-4xl font-semibold tracking-[-.045em] sm:text-6xl">Good work should feel organised from day one.</h2>
-          <p className="text-lg leading-8 text-white/65">Whether the job is a single product image or a complete campaign, you always know what happens next.</p>
-        </div>
-        <ol className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-white/15 bg-white/15 md:grid-cols-2 lg:grid-cols-4">
-          {steps.map(([number, title, description]) => (
-            <li key={number} className="bg-[#151715] p-7 sm:p-8">
-              <span className="text-sm font-bold tracking-widest text-[#65a7ff]">{number}</span>
-              <h3 className="mt-12 text-xl font-semibold tracking-[-.025em]">{title}</h3>
-              <p className="mt-3 leading-7 text-white/60">{description}</p>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
-  )
+  return <section id="process" className="relative overflow-hidden bg-[#101c30] py-24 text-white sm:py-32"><div className="pointer-events-none absolute -left-48 top-20 h-[500px] w-[500px] rounded-full border border-blue-400/15" /><div className="relative mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-2 lg:gap-24 lg:px-10"><div><p className="editorial-kicker text-blue-300">03 / Working together</p><h2 className="mt-5 text-4xl font-medium leading-[1.05] tracking-[-.05em] sm:text-6xl">A good result<br />starts with a<br /><span className="font-serif italic text-blue-300">clear process.</span></h2><p className="mt-7 max-w-sm text-base leading-8 text-slate-400">From the first conversation to final delivery, keep the work connected. Your client portal brings assigned jobs and project progress into one place.</p><a href="/login" className="mt-8 inline-flex items-center gap-4 border-b border-blue-400/50 pb-2 text-sm text-blue-200 hover:text-white">Already working with us? Client portal <ArrowUpRight size={16} /></a></div><ol className="divide-y divide-white/15 border-t border-white/15">{steps.map(([number, title, description]) => <li key={number} className="flex gap-6 py-8"><span className="pt-1 text-xs text-blue-300">{number}</span><div><h3 className="text-2xl font-medium tracking-tight">{title}</h3><p className="mt-3 text-sm leading-7 text-slate-400">{description}</p></div></li>)}</ol></div></section>
 }

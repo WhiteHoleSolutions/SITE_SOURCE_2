@@ -47,21 +47,22 @@ export default function InquiryForm() {
   }
 
   return (
-    <section id="contact" className="bg-[#dbeafe] py-24 sm:py-32">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
+    <section id="contact" className="bg-[#edf3fc] py-24 sm:py-32">
+      <div className="max-w-7xl mx-auto grid items-start gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-20 lg:px-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-8 sm:mb-12 md:mb-16"
+          className="lg:sticky lg:top-32"
         >
-          <p className="editorial-kicker mb-4 text-[#216ac4]">Start a project</p>
+          <p className="editorial-kicker mb-5 text-blue-700">04 / Your next project</p>
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-[-.05em] text-[#111211] mb-4">
-            Get in Touch
+            Something in mind?<br /><span className="font-serif italic font-normal text-blue-700">Let’s make it real.</span>
           </h2>
-          <p className="text-base sm:text-lg text-[#183b67] max-w-2xl mx-auto px-4">
+          <p className="mt-7 text-base leading-8 sm:text-lg text-slate-600 max-w-md">
             Tell us what you are trying to make. We’ll shape the right production plan with you.
           </p>
+          <div className="mt-9 max-w-md border-t border-blue-200 pt-6"><p className="text-sm font-semibold text-slate-900">A little context goes a long way.</p><p className="mt-3 text-sm leading-7 text-slate-500">Tell us what you need, your ideal timeline and any ideas or requirements. Whether it’s a personal project or commercial work, that’s enough to start the conversation.</p></div>
         </motion.div>
 
         <motion.div
@@ -69,7 +70,7 @@ export default function InquiryForm() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="max-w-2xl mx-auto rounded-2xl bg-[#f8f6f1] p-5 shadow-[0_20px_50px_rgba(30,90,180,.18)] sm:p-8"
+          className="w-full rounded-2xl border border-white bg-white p-6 shadow-[0_20px_60px_rgba(20,40,80,.07)] sm:p-9"
         >
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>

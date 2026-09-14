@@ -26,12 +26,15 @@ export default function Portfolio() {
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null)
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null)
   const [loadedAssets, setLoadedAssets] = useState<Set<string>>(new Set())
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
   useEffect(() => {
     fetch('/api/albums/public')
-      .then(res => res.json())
+      .then(res => { if (!res.ok) throw new Error('Unable to load work'); return res.json() })
       .then(data => setAlbums(data.albums || []))
-      .catch(console.error)
+      .catch(() => setLoadError(true))
+      .finally(() => setLoading(false))
   }, [])
 
   const markLoaded = (key: string) => {
@@ -39,35 +42,41 @@ export default function Portfolio() {
   }
 
   return (
-    <section id="portfolio" className="bg-[#111211] py-24 sm:py-32">
+    <section id="portfolio" className="bg-[#0b1423] py-24 sm:py-32">
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-8 sm:mb-12 md:mb-16"
+          className="mb-12 max-w-3xl sm:mb-16"
         >
-          <p className="editorial-kicker mb-4 text-[#65a7ff]">Selected work</p>
+          <p className="editorial-kicker mb-5 text-blue-300">02 / The work</p>
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-[-.045em] text-white mb-4">
-            Our Portfolio
+            Less explaining.<br /><span className="font-serif italic font-normal text-blue-300">More showing.</span>
           </h2>
-          <p className="text-base sm:text-lg text-white/65 max-w-2xl mx-auto px-4">
+          <p className="mt-6 text-base leading-8 sm:text-lg text-slate-400 max-w-xl">
             A selection of visual work, campaign assets and practical production outcomes.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+        {loading && <div role="status" className="grid gap-6 sm:grid-cols-2"><div className="h-80 animate-pulse rounded-xl bg-white/5" /><div className="h-80 animate-pulse rounded-xl bg-white/5" /><span className="sr-only">Loading portfolio</span></div>}
+        {!loading && !albums.length && <div className="rounded-2xl border border-white/15 p-8"><p className="text-xl text-white">{loadError ? 'The portfolio is temporarily unavailable.' : 'Your next idea belongs here.'}</p><p className="mt-3 text-sm text-slate-400">Tell us what you have in mind and we can discuss the right approach.</p><a href="#contact" className="mt-5 inline-block text-sm font-semibold text-blue-300 hover:text-white">Start a conversation →</a></div>}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
           {albums.map((album, index) => (
             <motion.div
               key={album.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="group cursor-pointer"
+              transition={{ delay: Math.min(index * 0.08, 0.3) }}
+              className={`group cursor-pointer rounded-xl outline-offset-8 ${index % 4 === 1 ? 'sm:mt-16' : ''}`}
+              role="button"
+              tabIndex={0}
+              aria-label={`Open album: ${album.title}`}
+              onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedAlbum(album) } }}
               onClick={() => setSelectedAlbum(album)}
             >
-              <div className="relative h-72 sm:h-80 md:h-[26rem] overflow-hidden bg-white/10">
+              <div className="relative h-80 sm:h-96 md:h-[30rem] overflow-hidden rounded-xl bg-white/10">
                 {album.coverImage ? (
                   <Image
                     src={album.coverImage}
