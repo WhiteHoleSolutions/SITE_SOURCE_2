@@ -17,6 +17,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
+    const maxUploadBytes = 100 * 1024 * 1024
+    const allowedTypes = new Set([
+      'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+      'video/mp4', 'video/quicktime', 'video/webm', 'application/pdf',
+    ])
+
+    if (!allowedTypes.has(file.type)) {
+      return NextResponse.json({ error: 'Unsupported file type' }, { status: 400 })
+    }
+
+    if (file.size === 0 || file.size > maxUploadBytes) {
+      return NextResponse.json({ error: 'Files must be between 1 byte and 100 MB' }, { status: 400 })
+    }
+
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 

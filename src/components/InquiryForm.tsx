@@ -144,8 +144,7 @@ export default function InquiryForm() {
             </button>
 
             <p className="text-xs sm:text-sm text-dark-600 text-center">
-              By submitting this form, you agree to our terms and conditions.
-              A customer account will be created for tracking your inquiries.
+              We&apos;ll review your request and contact you about the best next step.
             </p>
           </form>
         </motion.div>

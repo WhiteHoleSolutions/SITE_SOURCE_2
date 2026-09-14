@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { stat } from 'fs/promises'
+import { prisma } from '@/lib/db'
+import { getSession } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,6 +25,40 @@ export async function GET(
       : join(process.cwd(), 'public', 'uploads')
     
     const filepath = join(uploadDir, filename)
+
+    const url = `/api/files/${filename}`
+    const media = await prisma.media.findFirst({
+      where: { url },
+      include: { album: true },
+    })
+
+    // Public portfolio media remains public. Everything else on the uploads
+    // disk is restricted, including private client-gallery media and receipts.
+    if (!media || media.album.type !== 'PUBLIC') {
+      const session = await getSession()
+      if (!session) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+
+      if (session.role !== 'ADMIN') {
+        if (!media || session.role !== 'CUSTOMER') {
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
+        const customer = await prisma.customer.findUnique({
+          where: { userId: session.userId },
+          select: { id: true },
+        })
+        const access = customer && await prisma.albumAccess.findUnique({
+          where: { albumId_customerId: { albumId: media.albumId, customerId: customer.id } },
+          select: { id: true },
+        })
+
+        if (!access) {
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+      }
+    }
 
     // Check if file exists
     try {
@@ -46,6 +82,7 @@ export async function GET(
       mov: 'video/quicktime',
       avi: 'video/x-msvideo',
       webm: 'video/webm',
+      pdf: 'application/pdf',
     }
 
     const contentType = contentTypeMap[ext || ''] || 'application/octet-stream'
@@ -53,7 +90,9 @@ export async function GET(
     return new NextResponse(fileBuffer, {
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000, immutable',
+        'Cache-Control': media?.album.type === 'PUBLIC'
+          ? 'public, max-age=31536000, immutable'
+          : 'private, no-store',
       },
     })
   } catch (error: any) {

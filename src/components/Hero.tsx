@@ -161,7 +161,7 @@ export default function Hero() {
             {businessName}
           </h1>
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-6 sm:mb-8">
-            Professional Business Media Solutions
+            From first idea to finished media, promotion and digital tools.
           </p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -173,13 +173,13 @@ export default function Hero() {
               href="#portfolio"
               className="bg-primary-500 hover:bg-primary-600 active:scale-95 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition transform hover:scale-105"
             >
-              View Our Work
+              Explore our work
             </a>
             <a
               href="#contact"
               className="bg-white/10 backdrop-blur-sm hover:bg-white/20 active:scale-95 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition border-2 border-white"
             >
-              Get in Touch
+              Start a project
             </a>
           </motion.div>
         </motion.div>

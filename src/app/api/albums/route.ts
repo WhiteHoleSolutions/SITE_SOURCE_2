@@ -6,14 +6,11 @@ import { albumSchema } from '@/lib/validators'
 export async function GET(request: NextRequest) {
   try {
     const session = await getSession()
-    
-    // Admins see all albums, regular users see only public albums
-    const whereClause = session?.role === 'ADMIN' 
-      ? {} 
-      : { type: 'PUBLIC' }
+    if (!session || session.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     const albums = await prisma.album.findMany({
-      where: whereClause,
       include: {
         media: {
           orderBy: { order: 'asc' },

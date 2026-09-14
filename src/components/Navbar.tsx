@@ -43,21 +43,26 @@ export default function Navbar() {
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
+            <Link href="/#services" className={`hover:text-primary-500 transition ${
+              scrolled ? 'text-dark-900' : 'text-white'
+            }`}>
+              Services
+            </Link>
             <Link href="/#portfolio" className={`hover:text-primary-500 transition ${
               scrolled ? 'text-dark-900' : 'text-white'
             }`}>
               Portfolio
             </Link>
-            <Link href="/#contact" className={`hover:text-primary-500 transition ${
+            <Link href="/#process" className={`hover:text-primary-500 transition ${
               scrolled ? 'text-dark-900' : 'text-white'
             }`}>
-              Contact
+              Process
             </Link>
             <Link 
               href="/login" 
               className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-full transition"
             >
-              Client Login
+              Client portal
             </Link>
           </div>
 
@@ -77,14 +82,17 @@ export default function Navbar() {
       {isOpen && (
         <div className="md:hidden bg-white shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1">
+            <Link href="/#services" className="block px-3 py-2 text-dark-900 hover:bg-primary-50">
+              Services
+            </Link>
             <Link href="/#portfolio" className="block px-3 py-2 text-dark-900 hover:bg-primary-50">
               Portfolio
             </Link>
-            <Link href="/#contact" className="block px-3 py-2 text-dark-900 hover:bg-primary-50">
-              Contact
+            <Link href="/#process" className="block px-3 py-2 text-dark-900 hover:bg-primary-50">
+              Process
             </Link>
             <Link href="/login" className="block px-3 py-2 text-primary-600 font-semibold">
-              Client Login
+              Client portal
             </Link>
           </div>
         </div>
